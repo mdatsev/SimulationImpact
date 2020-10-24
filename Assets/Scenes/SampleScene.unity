@@ -199,7 +199,8 @@ MonoBehaviour:
   useDummySim: 0
   startingPoints: []
   street: {fileID: 4353896233903582591, guid: 0e46df81bf5416c47bb7c2edbcc5fd8c, type: 3}
-  sidewalk: {fileID: 0}
+  sidewalk: {fileID: 1442747450203514, guid: a9da80f587bbf9046aefc4a4cfb8a7fc, type: 3}
+  traficL: {fileID: 1221989198454966, guid: 8f845198ed09c3c4bac1cbc4fce5e435, type: 3}
   decorationChance: 0.5
 --- !u!4 &650373116
 Transform:
@@ -481,6 +482,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Street: {fileID: 4816920427201829561, guid: d33ecfc96b4df964fb49cb4d4e6c7696, type: 3}
+  w: 50
+  h: 50
 --- !u!4 &1775313240
 Transform:
   m_ObjectHideFlags: 0

@@ -8,10 +8,10 @@ public class Node
     public bool traficLight;
     public bool intersection;
 
-    public Node(Vector3 pos)
+    public Node(Vector3 pos, bool lights)
     {
         position = pos;
-        traficLight = false;
+        traficLight = lights;
         intersection = false;
     }
 

@@ -13,8 +13,9 @@ public class Visualization : MonoBehaviour
     public List<Vector2> startingPoints = new List<Vector2>();
     public GameObject street;
     public GameObject sidewalk;
+    public GameObject traficL;
     public Map map = new Map();
-    public float decorationChance = 0.5f;
+    public float decorationChance = 0;
 
     private Simulation sim;
     private List<Car> cars = new List<Car>();
@@ -26,13 +27,16 @@ public class Visualization : MonoBehaviour
         streetWire = new GameObject("StreetWire");
         GameObject streets = new GameObject("Streets");
         GameObject sidewalks = new GameObject("Sidewalks");
+        GameObject traficLights = new GameObject("Sidewalks");
         GameObject decorations = new GameObject("Decorations");
         streets.transform.parent = streetWire.transform;
         sidewalks.transform.parent = streetWire.transform;
         decorations.transform.parent = streetWire.transform;
+        traficLights.transform.parent = streetWire.transform;
 
         reader();
         List<Edge> edg = map.edges;
+
         //Node n1 = new Node(new Vector3(5, 0, 0));
         //Node n2 = new Node(new Vector3(10, 0, 10));
 
@@ -55,17 +59,25 @@ public class Visualization : MonoBehaviour
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
 
                 Instantiate(street, pos, rotation, streets.transform);
-                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
-                rotation *= Quaternion.Euler(0, 180, 0);
-                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
-
-                if (UnityEngine.Random.Range(0, 1) < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos - normal * 3, rotation, decorations.transform);
+                
+                if(e.getStart().traficLight && i ==0) {
+                    Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
-                if (UnityEngine.Random.Range(0, 1) < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos + normal * 3, rotation, decorations.transform);
+
+                if(e.getEnd().traficLight && i == prefsNum) {
+                    Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
+                }
+                //Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                rotation *= Quaternion.Euler(0, 180, 0);
+                //Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+
+                if (UnityEngine.Random.Range(0.0f, 1.0f) < decorationChance) {
+                    //Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                    //    , pos - normal * 3, rotation, decorations.transform);
+                }
+                if (UnityEngine.Random.Range(0.0f, 1.0f) < decorationChance) {
+                    //Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                    //    , pos + normal * 3, rotation, decorations.transform);
                 }
             }
         }
@@ -76,8 +88,8 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
-        startingPoints.Add(new Vector2(0,0));
-        startingPoints.Add(new Vector2(1,1));
+        //startingPoints.Add(new Vector2(0,0));
+        //startingPoints.Add(new Vector2(1,1));
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
@@ -105,21 +117,28 @@ public class Visualization : MonoBehaviour
 
         //Dictionary<string, Dictionary<string, Dictionary<string, string>> wayMap = new Dictionary<string, Dictionary<string, Dictionary<string, string>>();
         List<List<Dictionary<string, Dictionary<string, string>>>> list = new List<List<Dictionary<string, Dictionary<string, string>>>>();
-        XmlReader reader = XmlReader.Create("./geo-milev.osm", settings);
+        XmlReader reader = XmlReader.Create("./berlin.osm", settings);
         
         reader.ReadToFollowing("node");
+        string id = "";
+        int lights = 0;
         do
         {   
             if(reader.IsStartElement()) {
                 if(reader.Name == "node"){
-                    string id = reader.GetAttribute("id");
+                    id = reader.GetAttribute("id");
                     string lat = reader.GetAttribute("lat");
                     string lon = reader.GetAttribute("lon");
                     nodes[id] = new Dictionary<string, string>();
                     nodes[id]["lat"] = lat;
                     nodes[id]["lon"] = lon;
+                    nodes[id]["lights"] = "false";
+
                 } else if(reader.Name == "tag") {
-                    
+                    if(reader.GetAttribute("k") == "highway" && reader.GetAttribute("v") == "traffic_signals") {
+                        lights++;
+                        nodes[id]["lights"] = "true";
+                    }
                 }
             }
             reader.Read();
@@ -153,13 +172,17 @@ public class Visualization : MonoBehaviour
 
                             float lat_s = float.Parse(nodes[lastRef]["lat"]);
                             float lon_s = float.Parse(nodes[lastRef]["lon"]);
+                            bool lights_s = nodes[lastRef]["lights"] == "true";
 
                             float lat_e = float.Parse(nodes[newRef]["lat"]);
                             float lon_e = float.Parse(nodes[newRef]["lon"]);
+                            bool lights_e = nodes[newRef]["lights"] == "true";
+
                             int scale = 100000;
 
-                            Node start = new Node(new Vector3((float)(lat_s - Math.Floor(lat_s)) * scale, 0, (float)(lon_s - Math.Floor(lon_s)) * scale));
-                            Node end = new Node(new Vector3((float)(lat_e - Math.Floor(lat_e)) * scale, 0, (float)(lon_e - Math.Floor(lon_e)) * scale));
+                            Node start = new Node(new Vector3((float)(lat_s - Math.Floor(lat_s)) * scale, 0, (float)(lon_s - Math.Floor(lon_s)) * scale), lights_s);
+                            
+                            Node end = new Node(new Vector3((float)(lat_e - Math.Floor(lat_e)) * scale, 0, (float)(lon_e - Math.Floor(lon_e)) * scale), lights_e);
 
                             currentNodes.Add(start);
                             currentNodes.Add(end);
@@ -172,10 +195,8 @@ public class Visualization : MonoBehaviour
                     }
                     else if(reader.Name == "tag"){
                         tagLast = true;
-                        if(reader.GetAttribute("k") == "highway" /* && reader.GetAttribute("v") == "residential"*/) {
-                            //Debug.Log(currentNodes.Count);
+                        if(reader.GetAttribute("k") == "highway" && reader.GetAttribute("v") != "footway") {
                             reader.Read();
-                            //Debug.Log(reader.GetAttribute("v"));
                             for(int j = 0; j < currentNodes.Count; j+=2) {
                                 map.addNode(currentNodes[j]);
                                 map.addNode(currentNodes[j+1]);
