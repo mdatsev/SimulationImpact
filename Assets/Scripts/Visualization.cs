@@ -157,6 +157,9 @@ public class Visualization : MonoBehaviour
         List<Node> currentNodes = new List<Node>();
         //List<Edge> currentEdge = new List<Edge>();
         Debug.Log("DEEDE");
+        float lat_start = 0;
+        float lon_start = 0;
+        bool firstRoad = true;
         do
         {   
             if(reader.IsStartElement()) {
@@ -170,8 +173,14 @@ public class Visualization : MonoBehaviour
                         }
 
                         string newRef = reader.GetAttribute("ref");
-                        if(curPoints == 1) {
 
+
+                        if(curPoints == 1) {
+                            if (firstRoad) {
+                                lat_start = float.Parse(nodes[lastRef]["lat"]);
+                                lon_start = float.Parse(nodes[lastRef]["lon"]);
+                                firstRoad = false;
+                            } 
                             float lat_s = float.Parse(nodes[lastRef]["lat"]);
                             float lon_s = float.Parse(nodes[lastRef]["lon"]);
                             bool lights_s = nodes[lastRef]["lights"] == "true";
@@ -182,9 +191,9 @@ public class Visualization : MonoBehaviour
 
                             int scale = 100000;
 
-                            Node start = new Node(new Vector3((float)(lat_s - Math.Floor(lat_s)) * scale, 0, (float)(lon_s - Math.Floor(lon_s)) * scale), lights_s);
+                            Node start = new Node(new Vector3((lat_s - lat_start) * scale, 0, (lon_s - lon_start) * scale), lights_s);
                             
-                            Node end = new Node(new Vector3((float)(lat_e - Math.Floor(lat_e)) * scale, 0, (float)(lon_e - Math.Floor(lon_e)) * scale), lights_e);
+                            Node end = new Node(new Vector3((lat_e - lat_start) * scale, 0, (lon_e - lon_start) * scale), lights_e);
 
                             currentNodes.Add(start);
                             currentNodes.Add(end);
