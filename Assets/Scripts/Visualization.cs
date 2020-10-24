@@ -38,7 +38,8 @@ public class Visualization : MonoBehaviour
         traficLights.transform.parent = streetWire.transform;
         buildings.transform.parent = streetWire.transform;
 
-        //reader();
+        reader();
+        /*
         Node test1 = new Node(new Vector3(0, 0, 0), false);
         Node test2 = new Node(new Vector3(20, 0, 1), false);
         Node test3 = new Node(new Vector3(22, 0, 10), false);
@@ -50,13 +51,14 @@ public class Visualization : MonoBehaviour
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
         map.addEdge(edgee2);
+        */
         List<Edge> edg = map.edges;
 
         //Node n1 = new Node(new Vector3(5, 0, 0), true);
         //Node n2 = new Node(new Vector3(10, 0, 10), true);
 
         //edg.Add(new Edge(n1, n2, 1, 1, 60, ""));
-        Debug.Log(edg.Count);
+        //Debug.Log(edg.Count);
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
         List<GameObject> decorationList = decorationListArray.ToList();
@@ -86,7 +88,10 @@ public class Visualization : MonoBehaviour
                 if(e.getEnd().traficLight && i == prefsNum) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
-                
+                if(map.nodeNeighbours[e.AddId].Count <= 2 && i == prefsNum)
+                {
+
+                }
                 if (rand.NextDouble() < buildingChance && i > 10)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
@@ -120,7 +125,7 @@ public class Visualization : MonoBehaviour
         } else {
             sim = new SimulationImpact();
         }
-
+        /*
         startingPoints.Add(new Vector2(0,0));
         //startingPoints.Add(new Vector2(1,1));
 
@@ -135,7 +140,7 @@ public class Visualization : MonoBehaviour
             cars.Add(c);
             Debug.Log(edgee);
         }
-
+        */
         sim.Init(cars);
     }
 
@@ -188,7 +193,7 @@ public class Visualization : MonoBehaviour
         
         bool tagLast = false;
 
-        List<Node> currentNodes = new List<Node>();
+        List<string> currentNodes = new List<string>();
         //List<Edge> currentEdge = new List<Edge>();
         Debug.Log("DEEDE");
         float lat_start = 0;
@@ -201,11 +206,10 @@ public class Visualization : MonoBehaviour
                     reader.Read();
                     if(reader.Name == "nd") {
                         if(tagLast) {
-                            currentNodes = new List<Node>();
+                            currentNodes = new List<string>();
                             tagLast = false;
                             curPoints = 0;
                         }
-
                         string newRef = reader.GetAttribute("ref");
 
 
@@ -224,14 +228,14 @@ public class Visualization : MonoBehaviour
                             bool lights_e = nodes[newRef]["lights"] == "true";
 
                             int scale = 100000;
-
                             Node start = new Node(new Vector3((lat_s - lat_start) * scale, 0, (lon_s - lon_start) * scale), lights_s);
-                            
+                            start.Id = lastRef;
                             Node end = new Node(new Vector3((lat_e - lat_start) * scale, 0, (lon_e - lon_start) * scale), lights_e);
-
-                            currentNodes.Add(start);
-                            currentNodes.Add(end);
-
+                            end.Id = newRef;
+                            currentNodes.Add(lastRef);
+                            currentNodes.Add(newRef);
+                            map.addNode(start);
+                            map.addNode(end);
                             curPoints = 0;
                             curSegment++;
                         }
@@ -242,10 +246,11 @@ public class Visualization : MonoBehaviour
                         tagLast = true;
                         if(reader.GetAttribute("k") == "highway" && reader.GetAttribute("v") != "footway") {
                             reader.Read();
+                            //Debug.Log(currentNodes.Count);
                             for(int j = 0; j < currentNodes.Count; j+=2) {
-                                map.addNode(currentNodes[j]);
-                                map.addNode(currentNodes[j+1]);
-                                Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
+                                Node startNode = map.nodes[currentNodes[j]];
+                                Node endNode = map.nodes[currentNodes[j+1]];
+                                Edge edge = new Edge(startNode, endNode, 1, 1, 50, reader.GetAttribute("v") + startNode.position.x + " " + startNode.position.z +" "+ endNode.position.x + " " + endNode.position.z);
                                 map.addEdge(edge);
                                 //Debug.Log(edge);
                             }  
