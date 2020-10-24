@@ -1,17 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Simulations
 {
     public class SimulationImpact : Simulation
     {
-        const double b = 0.4;
+        const double b = 0.4; // decel rate
         const double deltaT = 0.1; // reaction time / timestep
         const double S0 = 2; // min gap
         const double a = 0.1; // acceleration
-        const double V0 = 120; // desired speed
+        const double V0 = 0.05; // desired speed
 
         public override void Init(List<Car> cars) {
             this.cars = cars;
@@ -19,7 +18,6 @@ namespace Simulations
         }
         public override void Step() {
             foreach(Car c in this.cars) {
-                Debug.Log(c);
                 Car LV = getCarInfront(c); // leading vehicle
                 if(LV)
                     c.velocity = newVelocity(c.velocity, LV.position, LV.velocity);

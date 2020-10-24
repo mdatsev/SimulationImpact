@@ -16,8 +16,8 @@ public class Visualization : MonoBehaviour
     public GameObject sidewalk;
     public GameObject traficL;
     public Map map = new Map();
-    public float decorationChance = 0.0f;
-    public float buildingChance = 0.3f;
+    public float decorationChance = 0.2f;
+    public float buildingChance = 0.2f;
 
     private Simulation sim;
     private List<Car> cars = new List<Car>();
@@ -38,7 +38,18 @@ public class Visualization : MonoBehaviour
         traficLights.transform.parent = streetWire.transform;
         buildings.transform.parent = streetWire.transform;
 
-        reader();
+        //reader();
+        Node test1 = new Node(new Vector3(0, 0, 0), false);
+        Node test2 = new Node(new Vector3(20, 0, 1), false);
+        Node test3 = new Node(new Vector3(22, 0, 10), false);
+        Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
+        Edge edgee2 = new Edge(test2, test3, 1, 1, 1, "");    
+        map.addNode(test1);
+        map.addNode(test2);
+        map.addNode(test3);
+        //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
+        map.addEdge(edgee);
+        map.addEdge(edgee2);
         List<Edge> edg = map.edges;
 
         //Node n1 = new Node(new Vector3(5, 0, 0), true);
@@ -60,47 +71,52 @@ public class Visualization : MonoBehaviour
 
             for (int i=0; i <= prefsNum; i++)
             {
-                float x = e.getStart().position.x + (e.direction.x)*((float)i / prefsNum);
-                float z = e.getStart().position.z + (e.direction.z)*((float)i / prefsNum);
+                float x = e.startNode.position.x + (e.direction.x)*((float)i / prefsNum);
+                float z = e.startNode.position.z + (e.direction.z)*((float)i / prefsNum);
                 Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
                 Vector3 pos = new Vector3(x, 0, z);
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
-                if(e.getStart().traficLight && i ==0) {
+                if(e.startNode.traficLight && i ==0) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
 
-                if(e.getEnd().traficLight && i == prefsNum) {
+                if (e.endNode.traficLight && i == prefsNum)
+                {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
-                
-                if (rand.NextDouble() < buildingChance && i > 10)
-                {
-                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos + normal * 8, rotation, buildings.transform);
-                }
 
-                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
-                if (rand.NextDouble() < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos + normal * 3, rotation, decorations.transform);
-                }
+                //if(map.nodeNeighbours[e.startNode.Id].Count <= 2 && (i < prefsNum || i > 3))
+                //{
+                    // left side
+                    if (rand.NextDouble() < buildingChance && i > 10)
+                    {
+                        Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                            , pos + normal * 8, rotation, buildings.transform);
+                    }
 
-                rotation *= Quaternion.Euler(0, 180, 0);
-    
-                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
-                if (rand.NextDouble() < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos - normal * 3, rotation, decorations.transform);
-                }
+                    Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                    if (rand.NextDouble() < decorationChance) {
+                        Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                            , pos + normal * 3, rotation, decorations.transform);
+                    }
+
+                    rotation *= Quaternion.Euler(0, 180, 0);
+        //right side
+                    Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+                    if (rand.NextDouble() < decorationChance) {
+                        Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                            , pos - normal * 3, rotation, decorations.transform);
+                    }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
-                {
-                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos - normal * 8, rotation, buildings.transform);
-                }
+                    if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
+                    {
+                        Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                            , pos - normal * 8, rotation, buildings.transform);
+                    }
+                //}
             }
         }
     
@@ -110,17 +126,20 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
-        //startingPoints.Add(new Vector2(0,0));
+        startingPoints.Add(new Vector2(0,0));
         //startingPoints.Add(new Vector2(1,1));
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
-        // foreach (Vector2 p in startingPoints) {
-        //     GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
-        //     Car c = car.GetComponent<Car>();
-        //     c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
-        //     cars.Add(c);        
-        // }
+        foreach (Vector2 p in startingPoints) {
+            GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+            Car c = car.GetComponent<Car>();
+            c.path.Add(edgee2);
+            c.path.Add(edgee);
+            c.changeRoad(edgee);
+            cars.Add(c);
+            Debug.Log(edgee);
+        }
 
         sim.Init(cars);
     }
@@ -233,7 +252,7 @@ public class Visualization : MonoBehaviour
                                 map.addNode(currentNodes[j+1]);
                                 Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
                                 map.addEdge(edge);
-                                Debug.Log(edge);
+                                //Debug.Log(edge);
                             }  
                         }
                     }
