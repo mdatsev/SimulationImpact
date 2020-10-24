@@ -12,43 +12,64 @@ public class Visualization : MonoBehaviour
     public bool useDummySim;
     public List<Vector2> startingPoints = new List<Vector2>();
     public GameObject street;
+    public GameObject sidewalk;
     public Map map = new Map();
+    public float decorationChance = 0.5f;
 
     private Simulation sim;
     private List<Car> cars = new List<Car>();
+    private GameObject streetWire;
 
     // Start is called before the first frame update
     void Start()
     {
+        streetWire = new GameObject("StreetWire");
+        GameObject streets = new GameObject("Streets");
+        GameObject sidewalks = new GameObject("Sidewalks");
+        GameObject decorations = new GameObject("Decorations");
+        streets.transform.parent = streetWire.transform;
+        sidewalks.transform.parent = streetWire.transform;
+        decorations.transform.parent = streetWire.transform;
+
         reader();
-
         List<Edge> edg = map.edges;
-        // Node n1 = new Node(new Vector3(0, 0, 0));
-        // Node n2 = new Node(new Vector3(10, 0, 10));
+        //Node n1 = new Node(new Vector3(5, 0, 0));
+        //Node n2 = new Node(new Vector3(10, 0, 10));
 
-        // edg.Add(new Edge(n1, n2, 1, 1, 60));
-        //Node point1,point2;
+        //edg.Add(new Edge(n1, n2, 1, 1, 60));
         Debug.Log(edg.Count);
-        
-        
+
+        GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
+        List<GameObject> decorationList = decorationListArray.ToList();
 
         foreach (Edge e in edg)
         {
+            int prefsNum = (int)Math.Ceiling(e.length / 4);
 
-            int numofprefs = (int)Math.Floor(e.length / 2);
-            //Debug.Log(numofprefs);
-
-            for (int i=0; i < numofprefs; i++)
+            for (int i=0; i <= prefsNum; i++)
             {
-               float x = e.getStart().position.x + (e.getEnd().position.x - e.getStart().position.x)*((float)i /numofprefs);
-               float z = e.getStart().position.z + (e.getEnd().position.z - e.getStart().position.z) * ((float)i / numofprefs);
+                float x = e.getStart().position.x + (e.direction.x)*((float)i / prefsNum);
+                float z = e.getStart().position.z + (e.direction.z)*((float)i / prefsNum);
+                Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
+                Vector3 pos = new Vector3(x, 0, z);
+                Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
 
-               GameObject obj = Instantiate(street, new Vector3(x,0, z), Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.getEnd().position.x - e.getStart().position.x), (e.getEnd().position.z - e.getStart().position.z))*(180F/(float)Math.PI), Vector3.up));
-               obj.name = e.name;
+                Instantiate(street, pos, rotation, streets.transform);
+                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                rotation *= Quaternion.Euler(0, 180, 0);
+                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+
+                if (UnityEngine.Random.Range(0, 1) < decorationChance) {
+                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                        , pos - normal * 3, rotation, decorations.transform);
+                }
+                if (UnityEngine.Random.Range(0, 1) < decorationChance) {
+                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                        , pos + normal * 3, rotation, decorations.transform);
+                }
             }
-            //Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
         }
-
+    
         if (useDummySim) {
             sim = new SimulationDummy();
         } else {
