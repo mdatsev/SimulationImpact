@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Simulations
 {
-    public abstract class Simulation : MonoBehaviour
+    public abstract class Simulation
     {
         public List<Car> cars;
         public Map map;

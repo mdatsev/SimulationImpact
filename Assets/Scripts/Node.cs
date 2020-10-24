@@ -14,7 +14,7 @@ public class Node
         position = pos;
         traficLight = lights;
         intersection = false;
-        Id = 0;
+        Id = -1;
     }
 
     public Vector3 getPos()

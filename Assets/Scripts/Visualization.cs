@@ -34,14 +34,25 @@ public class Visualization : MonoBehaviour
         decorations.transform.parent = streetWire.transform;
         traficLights.transform.parent = streetWire.transform;
 
-        reader();
+        //reader();
+        Node test1 = new Node(new Vector3(0, 0, 0), false);
+        Node test2 = new Node(new Vector3(20, 0, 1), false);
+        Node test3 = new Node(new Vector3(22, 0, 10), false);
+        Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
+        Edge edgee2 = new Edge(test2, test3, 1, 1, 1, "");    
+        map.addNode(test1);
+        map.addNode(test2);
+        map.addNode(test3);
+        //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
+        map.addEdge(edgee);
+        map.addEdge(edgee2);
         List<Edge> edg = map.edges;
 
         //Node n1 = new Node(new Vector3(5, 0, 0));
         //Node n2 = new Node(new Vector3(10, 0, 10));
 
         //edg.Add(new Edge(n1, n2, 1, 1, 60));
-        Debug.Log(edg.Count);
+        //Debug.Log(edg.Count);
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
         List<GameObject> decorationList = decorationListArray.ToList();
@@ -90,17 +101,20 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
-        //startingPoints.Add(new Vector2(0,0));
+        startingPoints.Add(new Vector2(0,0));
         //startingPoints.Add(new Vector2(1,1));
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
-        // foreach (Vector2 p in startingPoints) {
-        //     GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
-        //     Car c = car.GetComponent<Car>();
-        //     c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
-        //     cars.Add(c);        
-        // }
+        foreach (Vector2 p in startingPoints) {
+            GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+            Car c = car.GetComponent<Car>();
+            c.path.Add(edgee2);
+            c.path.Add(edgee);
+            c.changeRoad(edgee);
+            cars.Add(c);
+            Debug.Log(edgee);
+        }
 
         sim.Init(cars);
     }
@@ -156,7 +170,7 @@ public class Visualization : MonoBehaviour
 
         List<Node> currentNodes = new List<Node>();
         //List<Edge> currentEdge = new List<Edge>();
-        Debug.Log("DEEDE");
+        //Debug.Log("DEEDE");
         do
         {   
             if(reader.IsStartElement()) {
@@ -204,7 +218,7 @@ public class Visualization : MonoBehaviour
                                 map.addNode(currentNodes[j+1]);
                                 Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
                                 map.addEdge(edge);
-                                Debug.Log(edge);
+                                //Debug.Log(edge);
                             }  
                         }
                     }
