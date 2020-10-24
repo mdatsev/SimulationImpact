@@ -17,10 +17,13 @@ public class Map
  
     }
     public void addNode(Node node) {
+        if (node.Id == -1)
+        {
+            node.Id = nodeCount;
+        }
         if (!nodes.ContainsKey(node.Id))
         {
             nodes.Add(nodeCount, node);
-            node.Id = nodeCount;
             nodeCount++;
             nodeNeighbours.Add(new List<Tuple<Node, float>>());
         }

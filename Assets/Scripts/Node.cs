@@ -14,6 +14,6 @@ public class Node
         position = pos;
         traficLight = lights;
         intersection = false;
-        Id = 0;
+        Id = -1;
     }
 }

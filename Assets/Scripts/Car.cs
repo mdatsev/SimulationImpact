@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace Simulations {
         public double position = 0;
         public int lane = 0;
         public Edge road;
-        private List<Edge> path = new List<Edge>();
+        public List<Edge> path = new List<Edge>();
 
         // Start is called before the first frame update
         void Start()
@@ -30,18 +31,30 @@ namespace Simulations {
                 newEdge = path[path.Count - 1];
             }
             position += velocity;
+            if(newEdge == null && position > road.length)
+            {
+                return;
+            }
+            //Debug.Log(velocity);
             if(position > road.length) {
                 changeRoad(newEdge);
             }
             double n = (position) / road.length;
-            transform.position = (road.endNode.position - road.startNode.position) * (float)n;
-
+            //Debug.Log(n);
+            transform.position = road.startNode.position + (road.endNode.position - road.startNode.position) * (float)n;
+            //Debug.Log(transform.position);
         }
         public void changeRoad(Edge newRoad) {
-            if (road != null) {
-                position = position - road.length;
+            if (road != null && newRoad != null) {
+                position -= road.length;
             }
-            this.road = newRoad;
+            if(newRoad != null) {
+                path.RemoveAt(path.Count - 1);
+                Debug.Log(path.Count);
+                road = newRoad;
+                transform.rotation = Quaternion.AngleAxis((float)Math.Atan2((road.direction.x), (road.direction.z)) * (180F / (float)Math.PI), Vector3.up);
+                Debug.Log(newRoad.length);
+            }
         }
     }
 }
