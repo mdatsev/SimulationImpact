@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace Simulations
 {
-    public class SimulationDummy : Simulation
+    public class SimulationImpact : Simulation
     {
         public override void Init() {
             return;

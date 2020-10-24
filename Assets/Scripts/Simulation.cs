@@ -1,12 +1,10 @@
 ﻿using System;
 
-namespace SimulationImpact
+namespace Simulations
 {
-    class Program
+    public abstract class Simulation
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("\nYe");
-        }
+        public abstract void Init();
+        public abstract void Step();
     }
 }
