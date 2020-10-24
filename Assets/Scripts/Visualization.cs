@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Visualization : MonoBehaviour
 {
     public GameObject SimulationManager;
-    public GameObject car;
+
+    private List<GameObject> carList;  
+    private GameObject[] carListArray;
 
     // Start is called before the first frame update
     void Start()
@@ -13,8 +16,11 @@ public class Visualization : MonoBehaviour
         SimulationRun simulation = SimulationManager.GetComponent<SimulationRun>();
         List<Vector2> startingPoints = simulation.startingPoints;
 
+        carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
+        carList = carListArray.ToList();
+
         foreach (Vector2 p in startingPoints) {
-            Instantiate(car, new Vector3(p.x, 0, p.y), Quaternion.identity);
+            Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
         }
     }
 
