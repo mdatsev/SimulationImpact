@@ -24,8 +24,10 @@ namespace Simulations {
         }
 
         public void Move() {
-            float n = (position + speed) / road.lenght;
+            float n = (float)((position + speed) / road.lenght);
         
+            position += speed;
+
             transform.position = (road.endNode.position - road.startNode.position) * n;
         }
 
