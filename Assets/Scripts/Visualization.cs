@@ -45,6 +45,7 @@ public class Visualization : MonoBehaviour
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
         List<GameObject> decorationList = decorationListArray.ToList();
+        System.Random rand = new System.Random();
 
         foreach (Edge e in edg)
         {
@@ -67,17 +68,18 @@ public class Visualization : MonoBehaviour
                 if(e.getEnd().traficLight && i == prefsNum) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
-                //Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
-                rotation *= Quaternion.Euler(0, 180, 0);
-                //Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
-
-                if (UnityEngine.Random.Range(0.0f, 1.0f) < decorationChance) {
-                    //Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                    //    , pos - normal * 3, rotation, decorations.transform);
+                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                if (rand.NextDouble() < decorationChance) {
+                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                        , pos + normal * 3, rotation, decorations.transform);
                 }
-                if (UnityEngine.Random.Range(0.0f, 1.0f) < decorationChance) {
-                    //Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                    //    , pos + normal * 3, rotation, decorations.transform);
+
+                rotation *= Quaternion.Euler(0, 180, 0);
+    
+                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+                if (rand.NextDouble() < decorationChance) {
+                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                        , pos - normal * 3, rotation, decorations.transform);
                 }
             }
         }
@@ -154,7 +156,7 @@ public class Visualization : MonoBehaviour
 
         List<Node> currentNodes = new List<Node>();
         //List<Edge> currentEdge = new List<Edge>();
-
+        Debug.Log("DEEDE");
         do
         {   
             if(reader.IsStartElement()) {
@@ -202,6 +204,7 @@ public class Visualization : MonoBehaviour
                                 map.addNode(currentNodes[j+1]);
                                 Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
                                 map.addEdge(edge);
+                                Debug.Log(edge);
                             }  
                         }
                     }
