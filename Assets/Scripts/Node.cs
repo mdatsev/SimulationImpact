@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Node
 {
-    public Vector2 position;
+    public Vector3 position;
     public bool traficLight;
     public bool intersection;
 }

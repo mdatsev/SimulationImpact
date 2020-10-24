@@ -9,6 +9,6 @@ public class Edge
     public int forwardLanes;
     public int backwardLanes;
     public int maxSpeed;
-    public int leght;
-    public Stack<Automobile> cars; 
+    public float lenght;
+    // public Stack<Car> cars; 
 }

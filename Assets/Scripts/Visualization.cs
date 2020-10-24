@@ -2,36 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Simulations;
 
 public class Visualization : MonoBehaviour
 {
     public GameObject SimulationManager;
+    public bool useDummySim;
+    public List<Vector2> startingPoints = new List<Vector2>();
 
-    private List<GameObject> carList;  
-    private GameObject[] carListArray;
+    private Simulation sim;
+    private List<Car> cars = new List<Car>();
 
     // Start is called before the first frame update
     void Start()
     {
-        SimulationRun simulation = SimulationManager.GetComponent<SimulationRun>();
-        List<Vector2> startingPoints = simulation.startingPoints;
+        if (useDummySim) {
+            sim = new SimulationImpact();
+        } else {
+            sim = new SimulationDummy();
+        }
 
-        carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
-        carList = carListArray.ToList();
+
+        startingPoints.Add(new Vector2(0,0));
+        startingPoints.Add(new Vector2(1,1));
+
+        GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
+        List<GameObject> carList = carListArray.ToList();
 
         foreach (Vector2 p in startingPoints) {
-            Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+            GameObject car = Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+            cars.Add(car.GetComponent<Car>());        
         }
+
+        sim.Init(cars);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        sim.Step();
     }
 
-    void SpawnCar()
-    {
-
-    }
 }
