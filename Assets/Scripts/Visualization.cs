@@ -30,42 +30,42 @@ public class Visualization : MonoBehaviour
         //Node point1,point2;
         Debug.Log(edg.Count);
         
+        
+
         foreach (Edge e in edg)
         {
 
-            int numofprefs = (int)e.length / 2;
+            int numofprefs = (int)Math.Floor(e.length / 2);
             //Debug.Log(numofprefs);
-            //Debug.Log(e.getStart().position.x + " patlak1 " + e.getStart().position.z);
-            //Debug.Log(e.getEnd().position.x + " patlak2 " + e.getEnd().position.z);
-            //Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
-            for (int i=1; i <= numofprefs; i++)
+
+            for (int i=0; i < numofprefs; i++)
             {
                float x = e.getStart().position.x + (e.getEnd().position.x - e.getStart().position.x)*((float)i /numofprefs);
                float z = e.getStart().position.z + (e.getEnd().position.z - e.getStart().position.z) * ((float)i / numofprefs);
-               
-               Instantiate(street, new Vector3(x,0, z), Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.getEnd().position.x - e.getStart().position.x), (e.getEnd().position.z - e.getStart().position.z))*(180F/(float)Math.PI), Vector3.up));
+
+               GameObject obj = Instantiate(street, new Vector3(x,0, z), Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.getEnd().position.x - e.getStart().position.x), (e.getEnd().position.z - e.getStart().position.z))*(180F/(float)Math.PI), Vector3.up));
+               obj.name = e.name;
             }
             //Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
         }
-        Debug.Log("asd");
+
         if (useDummySim) {
             sim = new SimulationDummy();
         } else {
             sim = new SimulationImpact();
         }
-                Debug.Log("asd");
 
         startingPoints.Add(new Vector2(0,0));
         startingPoints.Add(new Vector2(1,1));
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
-        foreach (Vector2 p in startingPoints) {
-            GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
-            Car c = car.GetComponent<Car>();
-            c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
-            cars.Add(c);        
-        }
+        // foreach (Vector2 p in startingPoints) {
+        //     GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+        //     Car c = car.GetComponent<Car>();
+        //     c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
+        //     cars.Add(c);        
+        // }
 
         sim.Init(cars);
     }
@@ -123,8 +123,8 @@ public class Visualization : MonoBehaviour
                     if(reader.Name == "nd") {
                         if(tagLast) {
                             currentNodes = new List<Node>();
-                        } else {
                             tagLast = false;
+                            curPoints = 0;
                         }
 
                         string newRef = reader.GetAttribute("ref");
@@ -135,7 +135,7 @@ public class Visualization : MonoBehaviour
 
                             float lat_e = float.Parse(nodes[newRef]["lat"]);
                             float lon_e = float.Parse(nodes[newRef]["lon"]);
-                            int scale = 10000;
+                            int scale = 100000;
 
                             Node start = new Node(new Vector3((float)(lat_s - Math.Floor(lat_s)) * scale, 0, (float)(lon_s - Math.Floor(lon_s)) * scale));
                             Node end = new Node(new Vector3((float)(lat_e - Math.Floor(lat_e)) * scale, 0, (float)(lon_e - Math.Floor(lon_e)) * scale));
@@ -151,22 +151,19 @@ public class Visualization : MonoBehaviour
                     }
                     else if(reader.Name == "tag"){
                         tagLast = true;
-                        for(int i = lastSegment; i < curSegment; i++) {
-                            if(reader.GetAttribute("k") == "highway") {
-                                for(int j = 0; j < currentNodes.Count; j+=2) {
-                                    map.addNode(currentNodes[j]);
-                                    map.addNode(currentNodes[j+1]);
-                                    
-                                    Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50);
-
-                                    map.addEdge(edge);
-
-                                }  
-
-                            }
-                            //list[i][2]["tags"][reader.GetAttribute("k")] = reader.GetAttribute("v");
+                        if(reader.GetAttribute("k") == "highway" /* && reader.GetAttribute("v") == "residential"*/) {
+                            //Debug.Log(currentNodes.Count);
+                            reader.Read();
+                            //Debug.Log(reader.GetAttribute("v"));
+                            for(int j = 0; j < currentNodes.Count; j+=2) {
+                                map.addNode(currentNodes[j]);
+                                map.addNode(currentNodes[j+1]);
+                                Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
+                                map.addEdge(edge);
+                            }  
                         }
                     }
+                    //curPoints = 0;
                 } while (reader.Name != "way");
             }
             lastSegment = curSegment;
