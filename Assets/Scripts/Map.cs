@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class Map
     public int nodeCount = 0;
     public Map()
     {
-        nodes = new List<Node>();
+        nodes = new Dictionary<int, Node>();
         edges = new List<Edge>();
  
     }
@@ -20,7 +21,7 @@ public class Map
             nodes.Add(nodeCount, node);
             node.Id = nodeCount;
             nodeCount++;
-            nodeNeighbours.Add(new List<Node>());
+            nodeNeighbours.Add(new List<Tuple<Node, float>>());
         }
     }
 
@@ -33,7 +34,7 @@ public class Map
 
     public void addEdge(Edge edge) {
         edges.Add(edge);
-        addNeighbourIfExists(edge.startNode, edge.endNode);
+        addNeighbourIfExists(edge.startNode, edge.endNode, edge.length);
     }
 
 

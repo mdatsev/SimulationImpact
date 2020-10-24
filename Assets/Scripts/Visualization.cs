@@ -135,7 +135,7 @@ public class Visualization : MonoBehaviour
 
         List<Node> currentNodes = new List<Node>();
         //List<Edge> currentEdge = new List<Edge>();
-
+        Debug.Log("DEEDE");
         do
         {   
             if(reader.IsStartElement()) {
@@ -181,6 +181,7 @@ public class Visualization : MonoBehaviour
                                 map.addNode(currentNodes[j+1]);
                                 Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
                                 map.addEdge(edge);
+                                Debug.Log(edge);
                             }  
                         }
                     }

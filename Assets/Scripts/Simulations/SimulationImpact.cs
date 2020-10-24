@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Simulations
 {
@@ -18,6 +19,7 @@ namespace Simulations
         }
         public override void Step() {
             foreach(Car c in this.cars) {
+                Debug.Log(c);
                 Car LV = getCarInfront(c); // leading vehicle
                 if(LV)
                     c.velocity = newVelocity(c.velocity, LV.position, LV.velocity);

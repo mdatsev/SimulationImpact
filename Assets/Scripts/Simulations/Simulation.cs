@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Simulations
 {
-    public abstract class Simulation
+    public abstract class Simulation : MonoBehaviour
     {
         public List<Car> cars;
         public Map map;
@@ -17,13 +19,13 @@ namespace Simulations
         {
             float[] dist = new float[map.nodeCount];
             int[] prev = new int[map.nodeCount];
-            List<Node> allNodes = new List<Node>(map.Nodes.Keys);
+            List<Node> allNodes = new List<Node>(map.nodes.Values.ToList());
             foreach (Node n in allNodes)
             {
-                if(startingNode.Id != n.id)
+                if(startingNode.Id != n.Id)
                 {
                     dist[n.Id] = float.MaxValue;
-                    prev[n.id] = -1;
+                    prev[n.Id] = -1;
                 }
             }
             dist[startingNode.Id] = 0;
@@ -35,14 +37,14 @@ namespace Simulations
                 q.Add(n);
             }
             while(q.Count > 0) {
-                Node u;
+                Node u = null;
                 float min = float.MaxValue;
 
                 foreach(Node n in q)
                 {
-                    if(dist[n.id] < min)
+                    if(dist[n.Id] < min)
                     {
-                        min = dist[n.id];
+                        min = dist[n.Id];
                         u = n;
                     }
                 }
@@ -58,17 +60,17 @@ namespace Simulations
                 }
             }
             List<Edge> path = new List<Edge>();
-            int idx = destination.Id;
-            while(prev[idx] != -1)
+            int Idx = destination.Id;
+            while(prev[Idx] != -1)
             {
                 foreach(Edge e in map.edges)
                 {
-                    if(e.endNode.Id == idx && e.startNode.Id == prev[idx])
+                    if(e.endNode.Id == Idx && e.startNode.Id == prev[Idx])
                     {
                         path.Add(e);
                     }
                 }
-                idx = prev[idx];
+                Idx = prev[Idx];
             }
             return path;
         }
