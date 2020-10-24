@@ -97,7 +97,7 @@ public class Visualization : MonoBehaviour
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
 
-                if (map.nodeNeighbours[e.AddId].Count <= 2 && i == prefsNum)
+                if (map.nodeNeighbours[e.endNode.AddId].Count <= 2 && i == prefsNum)
                 {
 
                 }
