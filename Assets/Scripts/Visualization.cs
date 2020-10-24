@@ -16,20 +16,27 @@ public class Visualization : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SimulationRun simulation = SimulationManager.GetComponent<SimulationRun>();
-        List<Vector2> startingPoints = simulation.startingPoints;
-        List<Edge> edg = simulation.edges;
+        List<Edge> edg = new List<Edge>();
+        Node n1 = new Node(new Vector3(0, 0, 0));
+        Node n2 = new Node(new Vector3(5, 0, 5));
+
+        edg.Add(new Edge(n1, n2, 1, 1, 60));
         //Node point1,point2;
+
 
         foreach (Edge e in edg)
         {
             int numofprefs = (int)e.lenght / 4;
-            for (int i=0; i < numofprefs; i++)
-            {
-                Debug.Log("MAMA Ti Deba + " + e.getStart().getPos().x + " ;; + "+ e.getStart().getPos().z);
-                Instantiate(street, new Vector3(e.getStart().getPos().x + i, 0, e.getStart().getPos().z + i), Quaternion.identity);
-            }
+            Debug.Log(e.getStart().position.x + " patlak1 " + e.getStart().position.z);
+            Debug.Log(e.getEnd().position.x + " patlak2 " + e.getEnd().position.z);
+            Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
+            //for (int i=1; i <= numofprefs; i++)
+            //{
+            //    Instantiate(street, new Vector3(e.direction.x + 2*i, 0, e.direction.z + 2*i), Quaternion.LookRotation(e.direction));
+            //}
+            Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
         }
+
 
         if (useDummySim) {
             sim = new SimulationImpact();

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Simulations;
 
 public class Edge
 {
@@ -10,8 +11,9 @@ public class Edge
     public int forwardLanes;
     public int backwardLanes;
     public int maxSpeed;
-    public double lenght;
-    public Stack<Automobile> cars;
+    public float lenght;
+    public Vector3 direction;
+    public Stack<Car> cars;
 
     public Edge(Node n1, Node n2,int fl,int bl,int maxs)
     {
@@ -22,7 +24,10 @@ public class Edge
         maxSpeed = maxs;
         float dx = n2.getPos().x - n1.getPos().x;
         float dz = n2.getPos().z - n1.getPos().z;
-        lenght = Math.Sqrt(dx*dx - dz*dz); 
+        direction.x = dx;
+        direction.y = 0;
+        direction.z = dz;
+        lenght = (float)Math.Sqrt(dx*dx + dz*dz); 
     }
 
     public Node getStart()
