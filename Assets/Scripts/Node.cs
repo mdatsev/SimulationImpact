@@ -17,9 +17,4 @@ public class Node
         intersection = false;
         Id = "-1";
     }
-
-    public Vector3 getPos()
-    {
-        return position;
-    }
 }
