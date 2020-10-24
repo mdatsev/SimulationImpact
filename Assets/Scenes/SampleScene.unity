@@ -159,8 +159,8 @@ MonoBehaviour:
   building: {fileID: 0}
   sidewalk: {fileID: 1442747450203514, guid: a9da80f587bbf9046aefc4a4cfb8a7fc, type: 3}
   traficL: {fileID: 1221989198454966, guid: 8f845198ed09c3c4bac1cbc4fce5e435, type: 3}
-  decorationChance: 0
-  buildingChance: 0.5
+  decorationChance: 0.2
+  buildingChance: 0.2
 --- !u!4 &650373116
 Transform:
   m_ObjectHideFlags: 0

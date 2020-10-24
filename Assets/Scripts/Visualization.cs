@@ -16,8 +16,8 @@ public class Visualization : MonoBehaviour
     public GameObject sidewalk;
     public GameObject traficL;
     public Map map = new Map();
-    public float decorationChance = 0.0f;
-    public float buildingChance = 0.3f;
+    public float decorationChance = 0.2f;
+    public float buildingChance = 0.2f;
 
     private Simulation sim;
     private List<Car> cars = new List<Car>();
@@ -60,47 +60,52 @@ public class Visualization : MonoBehaviour
 
             for (int i=0; i <= prefsNum; i++)
             {
-                float x = e.getStart().position.x + (e.direction.x)*((float)i / prefsNum);
-                float z = e.getStart().position.z + (e.direction.z)*((float)i / prefsNum);
+                float x = e.startNode.position.x + (e.direction.x)*((float)i / prefsNum);
+                float z = e.startNode.position.z + (e.direction.z)*((float)i / prefsNum);
                 Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
                 Vector3 pos = new Vector3(x, 0, z);
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
-                if(e.getStart().traficLight && i ==0) {
+                if(e.startNode.traficLight && i ==0) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
 
-                if(e.getEnd().traficLight && i == prefsNum) {
+                if (e.endNode.traficLight && i == prefsNum)
+                {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
-                
-                if (rand.NextDouble() < buildingChance && i > 10)
-                {
-                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos + normal * 8, rotation, buildings.transform);
-                }
 
-                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
-                if (rand.NextDouble() < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos + normal * 3, rotation, decorations.transform);
-                }
+                //if(map.nodeNeighbours[e.startNode.Id].Count <= 2 && (i < prefsNum || i > 3))
+                //{
+                    // left side
+                    if (rand.NextDouble() < buildingChance && i > 10)
+                    {
+                        Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                            , pos + normal * 8, rotation, buildings.transform);
+                    }
 
-                rotation *= Quaternion.Euler(0, 180, 0);
-    
-                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
-                if (rand.NextDouble() < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos - normal * 3, rotation, decorations.transform);
-                }
+                    Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                    if (rand.NextDouble() < decorationChance) {
+                        Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                            , pos + normal * 3, rotation, decorations.transform);
+                    }
+
+                    rotation *= Quaternion.Euler(0, 180, 0);
+        //right side
+                    Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+                    if (rand.NextDouble() < decorationChance) {
+                        Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                            , pos - normal * 3, rotation, decorations.transform);
+                    }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
-                {
-                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos - normal * 8, rotation, buildings.transform);
-                }
+                    if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
+                    {
+                        Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                            , pos - normal * 8, rotation, buildings.transform);
+                    }
+                //}
             }
         }
     
