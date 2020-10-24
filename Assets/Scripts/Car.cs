@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Simulations {
     public class Car : MonoBehaviour
     {
-        public float speed = 1;
+        public float velocity = 1;
 
         private float position = 0;
         private int lane = 0;
@@ -24,15 +24,15 @@ namespace Simulations {
         }
 
         public void Move() {
-            float n = (position + speed) / road.lenght;
+            position += velocity;
+            float n = (position) / road.length;
         
             transform.position = (road.endNode.position - road.startNode.position) * n;
         }
-
         public void changeRoad(Edge newRoad) {
+            position = position - road.length;
             this.road = newRoad;
 
-            position = 0;
         }
     }
 }
