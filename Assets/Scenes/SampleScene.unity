@@ -152,8 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bd820710d820889c979144a1af67cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useDummySim: 1
-  startingPoints: []
 --- !u!4 &178135261
 Transform:
   m_ObjectHideFlags: 0
@@ -200,7 +198,7 @@ MonoBehaviour:
   SimulationManager: {fileID: 178135259}
   useDummySim: 0
   startingPoints: []
-  street: {fileID: 5200292272125510094, guid: 2e8ddb0355810d141bde9709191b6881, type: 3}
+  street: {fileID: 4353896233903582591, guid: 0e46df81bf5416c47bb7c2edbcc5fd8c, type: 3}
 --- !u!4 &650373116
 Transform:
   m_ObjectHideFlags: 0

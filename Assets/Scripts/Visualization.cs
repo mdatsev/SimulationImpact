@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Simulations;
+using System;
 
 public class Visualization : MonoBehaviour
 {
@@ -27,13 +28,13 @@ public class Visualization : MonoBehaviour
 
         foreach (Edge e in edg)
         {
-            int numofprefs = (int)e.length / 4;
+            int numofprefs = (int)e.length / 2;
             Debug.Log(e.getStart().position.x + " patlak1 " + e.getStart().position.z);
             Debug.Log(e.getEnd().position.x + " patlak2 " + e.getEnd().position.z);
             //Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
             for (int i=1; i <= numofprefs; i++)
             {
-               Instantiate(street, new Vector3(e.direction.x + 2*i, 0, e.direction.z + 2*i), Quaternion.LookRotation(e.direction));
+               Instantiate(street, new Vector3(e.getStart().position.x + (e.getEnd().position.x - e.getStart().position.x)*((float)i /numofprefs), 0, e.getStart().position.z + (e.getEnd().position.z - e.getStart().position.z) * ((float)i / numofprefs)), Quaternion.AngleAxis( -(float)Math.Atan2((e.getEnd().position.x - e.getStart().position.x), (e.getEnd().position.z - e.getStart().position.z))*(180F/(float)Math.PI), Vector3.up));
             }
             //Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
         }
@@ -51,7 +52,7 @@ public class Visualization : MonoBehaviour
         List<GameObject> carList = carListArray.ToList();
 
         foreach (Vector2 p in startingPoints) {
-            GameObject car = Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+            GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
             Car c = car.GetComponent<Car>();
             c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
             cars.Add(c);        
