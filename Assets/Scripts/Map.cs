@@ -4,20 +4,36 @@ using UnityEngine;
 
 public class Map
 {
-    public List<Node> nodes;
+    public Dictionary<int, Node> nodes;
     public List<Edge> edges;
-
+    public List<List<Tuple<Node, float>>> nodeNeighbours;
+    public int nodeCount = 0;
     public Map()
     {
         nodes = new List<Node>();
         edges = new List<Edge>();
-
+ 
     }
     public void addNode(Node node) {
-        nodes.Add(node);
+        if (!nodes.ContainsKey(node.Id))
+        {
+            nodes.Add(nodeCount, node);
+            node.Id = nodeCount;
+            nodeCount++;
+            nodeNeighbours.Add(new List<Node>());
+        }
     }
+
+    private void addNeighbourIfExists(Node s, Node e, float length) {
+        if (nodeNeighbours.Count > s.Id && nodeNeighbours.Count > e.Id) {
+            nodeNeighbours[s.Id].Add(new Tuple<Node, float>(e, length));
+            nodeNeighbours[e.Id].Add(new Tuple<Node, float>(s, length));
+        }
+    }
+
     public void addEdge(Edge edge) {
         edges.Add(edge);
+        addNeighbourIfExists(edge.startNode, edge.endNode);
     }
 
 
