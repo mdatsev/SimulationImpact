@@ -24,9 +24,7 @@ public class Edge
         maxSpeed = maxs;
         float dx = n2.getPos().x - n1.getPos().x;
         float dz = n2.getPos().z - n1.getPos().z;
-        direction.x = dx;
-        direction.y = 0;
-        direction.z = dz;
+        direction = n2.getPos() - n1.getPos();
         length = (float)Math.Sqrt(dx*dx + dz*dz); 
     }
 
@@ -37,7 +35,7 @@ public class Edge
 
     public Node getEnd()
     {
-        return startNode;
+        return endNode;
     }
 
 }

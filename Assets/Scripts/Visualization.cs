@@ -10,6 +10,7 @@ public class Visualization : MonoBehaviour
     public bool useDummySim;
     public List<Vector2> startingPoints = new List<Vector2>();
     public GameObject street;
+
     private Simulation sim;
     private List<Car> cars = new List<Car>();
 
@@ -18,7 +19,7 @@ public class Visualization : MonoBehaviour
     {
         List<Edge> edg = new List<Edge>();
         Node n1 = new Node(new Vector3(0, 0, 0));
-        Node n2 = new Node(new Vector3(5, 0, 5));
+        Node n2 = new Node(new Vector3(10, 0, 10));
 
         edg.Add(new Edge(n1, n2, 1, 1, 60));
         //Node point1,point2;
@@ -29,21 +30,19 @@ public class Visualization : MonoBehaviour
             int numofprefs = (int)e.length / 4;
             Debug.Log(e.getStart().position.x + " patlak1 " + e.getStart().position.z);
             Debug.Log(e.getEnd().position.x + " patlak2 " + e.getEnd().position.z);
-            Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
-            //for (int i=1; i <= numofprefs; i++)
-            //{
-            //    Instantiate(street, new Vector3(e.direction.x + 2*i, 0, e.direction.z + 2*i), Quaternion.LookRotation(e.direction));
-            //}
-            Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
+            //Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
+            for (int i=1; i <= numofprefs; i++)
+            {
+               Instantiate(street, new Vector3(e.direction.x + 2*i, 0, e.direction.z + 2*i), Quaternion.LookRotation(e.direction));
+            }
+            //Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
         }
-
 
         if (useDummySim) {
             sim = new SimulationImpact();
         } else {
             sim = new SimulationDummy();
         }
-        
 
         startingPoints.Add(new Vector2(0,0));
         startingPoints.Add(new Vector2(1,1));
@@ -54,9 +53,8 @@ public class Visualization : MonoBehaviour
         foreach (Vector2 p in startingPoints) {
             GameObject car = Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
             Car c = car.GetComponent<Car>();
-            Debug.Log(c.velocity);
-
-            cars.Add(car.GetComponent<Car>());        
+            c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
+            cars.Add(c);        
         }
 
         sim.Init(cars);
