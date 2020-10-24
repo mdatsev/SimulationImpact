@@ -5,7 +5,8 @@ using UnityEngine;
 public class Node
 {
     public Vector3 position;
-    public int Id;
+    public string Id;
+    public int AddId;
     public bool traficLight;
     public bool intersection;
 
@@ -14,6 +15,6 @@ public class Node
         position = pos;
         traficLight = lights;
         intersection = false;
-        Id = -1;
+        Id = "-1";
     }
 }
