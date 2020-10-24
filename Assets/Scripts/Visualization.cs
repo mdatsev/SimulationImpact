@@ -76,7 +76,7 @@ public class Visualization : MonoBehaviour
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && i > 5)
+                if (rand.NextDouble() < buildingChance && i > 10)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos + normal * 8, rotation, buildings.transform);
@@ -96,7 +96,7 @@ public class Visualization : MonoBehaviour
                         , pos - normal * 3, rotation, decorations.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum + 5)
+                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos - normal * 8, rotation, buildings.transform);
