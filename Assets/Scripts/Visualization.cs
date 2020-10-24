@@ -53,7 +53,7 @@ public class Visualization : MonoBehaviour
         } else {
             sim = new SimulationImpact();
         }
-                Debug.Log("asd");
+        Debug.Log("asd");
 
         startingPoints.Add(new Vector2(0,0));
         startingPoints.Add(new Vector2(1,1));

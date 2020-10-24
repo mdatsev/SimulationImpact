@@ -7,8 +7,9 @@ namespace Simulations {
     {
         public double velocity = 1;
         public double position = 0;
-        private int lane = 0;
-        private Edge road;
+        public int lane = 0;
+        public Edge road;
+        private List<Edge> path = new List<Edge>();
 
         // Start is called before the first frame update
         void Start()
@@ -23,10 +24,18 @@ namespace Simulations {
         }
 
         public void Move() {
-
+            Edge newEdge = null;
+            if(path.Count > 0)
+            {
+                newEdge = path[path.Count - 1];
+            }
             position += velocity;
+            if(position > road.length) {
+                changeRoad(newEdge);
+            }
             double n = (position) / road.length;
             transform.position = (road.endNode.position - road.startNode.position) * (float)n;
+
         }
         public void changeRoad(Edge newRoad) {
             if (road != null) {
