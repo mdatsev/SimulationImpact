@@ -12,10 +12,12 @@ public class Visualization : MonoBehaviour
     public bool useDummySim;
     public List<Vector2> startingPoints = new List<Vector2>();
     public GameObject street;
+    public GameObject building;
     public GameObject sidewalk;
     public GameObject traficL;
     public Map map = new Map();
-    public float decorationChance = 0;
+    public float decorationChance = 0.0f;
+    public float buildingChance = 0.3f;
 
     private Simulation sim;
     private List<Car> cars = new List<Car>();
@@ -29,10 +31,12 @@ public class Visualization : MonoBehaviour
         GameObject sidewalks = new GameObject("Sidewalks");
         GameObject traficLights = new GameObject("Sidewalks");
         GameObject decorations = new GameObject("Decorations");
+        GameObject buildings = new GameObject("Buildings");
         streets.transform.parent = streetWire.transform;
         sidewalks.transform.parent = streetWire.transform;
         decorations.transform.parent = streetWire.transform;
         traficLights.transform.parent = streetWire.transform;
+        buildings.transform.parent = streetWire.transform;
 
         //reader();
         Node test1 = new Node(new Vector3(0, 0, 0), false);
@@ -48,15 +52,18 @@ public class Visualization : MonoBehaviour
         map.addEdge(edgee2);
         List<Edge> edg = map.edges;
 
-        //Node n1 = new Node(new Vector3(5, 0, 0));
-        //Node n2 = new Node(new Vector3(10, 0, 10));
+        //Node n1 = new Node(new Vector3(5, 0, 0), true);
+        //Node n2 = new Node(new Vector3(10, 0, 10), true);
 
-        //edg.Add(new Edge(n1, n2, 1, 1, 60));
-        //Debug.Log(edg.Count);
+        //edg.Add(new Edge(n1, n2, 1, 1, 60, ""));
+        Debug.Log(edg.Count);
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
         List<GameObject> decorationList = decorationListArray.ToList();
         System.Random rand = new System.Random();
+
+        GameObject[] buildingListArray = Resources.LoadAll<GameObject>("Prefabs/Buildings");
+        List<GameObject> buildingList = buildingListArray.ToList();
 
         foreach (Edge e in edg)
         {
@@ -79,6 +86,13 @@ public class Visualization : MonoBehaviour
                 if(e.getEnd().traficLight && i == prefsNum) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
+                
+                if (rand.NextDouble() < buildingChance && i > 10)
+                {
+                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                        , pos + normal * 8, rotation, buildings.transform);
+                }
+
                 Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
@@ -91,6 +105,12 @@ public class Visualization : MonoBehaviour
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
                         , pos - normal * 3, rotation, decorations.transform);
+                }
+                
+                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
+                {
+                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                        , pos - normal * 8, rotation, buildings.transform);
                 }
             }
         }
@@ -170,7 +190,10 @@ public class Visualization : MonoBehaviour
 
         List<Node> currentNodes = new List<Node>();
         //List<Edge> currentEdge = new List<Edge>();
-        //Debug.Log("DEEDE");
+        Debug.Log("DEEDE");
+        float lat_start = 0;
+        float lon_start = 0;
+        bool firstRoad = true;
         do
         {   
             if(reader.IsStartElement()) {
@@ -184,8 +207,14 @@ public class Visualization : MonoBehaviour
                         }
 
                         string newRef = reader.GetAttribute("ref");
-                        if(curPoints == 1) {
 
+
+                        if(curPoints == 1) {
+                            if (firstRoad) {
+                                lat_start = float.Parse(nodes[lastRef]["lat"]);
+                                lon_start = float.Parse(nodes[lastRef]["lon"]);
+                                firstRoad = false;
+                            } 
                             float lat_s = float.Parse(nodes[lastRef]["lat"]);
                             float lon_s = float.Parse(nodes[lastRef]["lon"]);
                             bool lights_s = nodes[lastRef]["lights"] == "true";
@@ -196,9 +225,9 @@ public class Visualization : MonoBehaviour
 
                             int scale = 100000;
 
-                            Node start = new Node(new Vector3((float)(lat_s - Math.Floor(lat_s)) * scale, 0, (float)(lon_s - Math.Floor(lon_s)) * scale), lights_s);
+                            Node start = new Node(new Vector3((lat_s - lat_start) * scale, 0, (lon_s - lon_start) * scale), lights_s);
                             
-                            Node end = new Node(new Vector3((float)(lat_e - Math.Floor(lat_e)) * scale, 0, (float)(lon_e - Math.Floor(lon_e)) * scale), lights_e);
+                            Node end = new Node(new Vector3((lat_e - lat_start) * scale, 0, (lon_e - lon_start) * scale), lights_e);
 
                             currentNodes.Add(start);
                             currentNodes.Add(end);
