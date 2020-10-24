@@ -38,8 +38,8 @@ public class Visualization : MonoBehaviour
         traficLights.transform.parent = streetWire.transform;
         buildings.transform.parent = streetWire.transform;
 
-        //reader();
-        Node test1 = new Node(new Vector3(0, 0, 0), false);
+        reader();
+        /*Node test1 = new Node(new Vector3(0, 0, 0), false);
         Node test2 = new Node(new Vector3(20, 0, 1), false);
         Node test3 = new Node(new Vector3(22, 0, 10), false);
         Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
@@ -49,7 +49,7 @@ public class Visualization : MonoBehaviour
         map.addNode(test3);
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
-        map.addEdge(edgee2);
+        map.addEdge(edgee2);*/
         List<Edge> edg = map.edges;
 
         //Node n1 = new Node(new Vector3(5, 0, 0), true);
@@ -87,7 +87,7 @@ public class Visualization : MonoBehaviour
                 {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
-
+                if(map.nodeNeighbours[e.startNode.Id].Count > 1) Debug.Log(map.nodeNeighbours[e.startNode.Id].Count);
                 //if(map.nodeNeighbours[e.startNode.Id].Count <= 2 && (i < prefsNum || i > 3))
                 //{
                     // left side
@@ -126,7 +126,7 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
-        startingPoints.Add(new Vector2(0,0));
+        /*startingPoints.Add(new Vector2(0,0));
         //startingPoints.Add(new Vector2(1,1));
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
@@ -140,7 +140,7 @@ public class Visualization : MonoBehaviour
             cars.Add(c);
             Debug.Log(edgee);
         }
-
+        */
         sim.Init(cars);
     }
 
