@@ -6,6 +6,7 @@ public class SimulationRun : MonoBehaviour
 {
     public GameObject simulation;
     public List<Vector2> startingPoints = new List<Vector2>();
+    public 
 
     // Start is called before the first frame update
     void Start()
