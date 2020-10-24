@@ -41,6 +41,7 @@ public class Visualization : MonoBehaviour
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
         List<GameObject> decorationList = decorationListArray.ToList();
+        System.Random rand = new System.Random();
 
         foreach (Edge e in edg)
         {
@@ -56,16 +57,17 @@ public class Visualization : MonoBehaviour
 
                 Instantiate(street, pos, rotation, streets.transform);
                 Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
-                rotation *= Quaternion.Euler(0, 180, 0);
-                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
-
-                if (UnityEngine.Random.Range(0, 1) < decorationChance) {
-                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos - normal * 3, rotation, decorations.transform);
-                }
-                if (UnityEngine.Random.Range(0, 1) < decorationChance) {
+                if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
                         , pos + normal * 3, rotation, decorations.transform);
+                }
+
+                rotation *= Quaternion.Euler(0, 180, 0);
+    
+                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+                if (rand.NextDouble() < decorationChance) {
+                    Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
+                        , pos - normal * 3, rotation, decorations.transform);
                 }
             }
         }
