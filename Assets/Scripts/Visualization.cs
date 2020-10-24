@@ -19,8 +19,8 @@ public class Visualization : MonoBehaviour
     void Start()
     {
         List<Edge> edg = new List<Edge>();
-        Node n1 = new Node(new Vector3(0, 0, 0));
-        Node n2 = new Node(new Vector3(10, 0, 10));
+        Node n1 = new Node(new Vector3(5, 0, 3));
+        Node n2 = new Node(new Vector3(10, 0, 15));
 
         edg.Add(new Edge(n1, n2, 1, 1, 60));
         //Node point1,point2;
@@ -34,7 +34,10 @@ public class Visualization : MonoBehaviour
             //Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
             for (int i=1; i <= numofprefs; i++)
             {
-               Instantiate(street, new Vector3(e.getStart().position.x + (e.getEnd().position.x - e.getStart().position.x)*((float)i /numofprefs), 0, e.getStart().position.z + (e.getEnd().position.z - e.getStart().position.z) * ((float)i / numofprefs)), Quaternion.AngleAxis( -(float)Math.Atan2((e.getEnd().position.x - e.getStart().position.x), (e.getEnd().position.z - e.getStart().position.z))*(180F/(float)Math.PI), Vector3.up));
+               Instantiate(street, 
+                   new Vector3(e.getStart().position.x + (e.getEnd().position.x - e.getStart().position.x)*((float)i /numofprefs), 0, e.getStart().position.z + (e.getEnd().position.z - e.getStart().position.z) * ((float)i / numofprefs)),
+                   Quaternion.AngleAxis( -90+(float)Math.Atan2((e.getEnd().position.x - e.getStart().position.x), (e.getEnd().position.z - e.getStart().position.z))*(180F/(float)Math.PI), Vector3.up));
+                 
             }
             //Instantiate(street, new Vector3(e.getEnd().position.x, 0, e.getEnd().position.z), Quaternion.LookRotation(e.direction));
         }
