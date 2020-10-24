@@ -11,7 +11,8 @@ public class Edge
     public int forwardLanes;
     public int backwardLanes;
     public int maxSpeed;
-    public double lenght;
+    public float lenght;
+    public Vector3 direction;
     public Stack<Car> cars;
 
     public Edge(Node n1, Node n2,int fl,int bl,int maxs)
@@ -23,7 +24,8 @@ public class Edge
         maxSpeed = maxs;
         float dx = n2.getPos().x - n1.getPos().x;
         float dz = n2.getPos().z - n1.getPos().z;
-        lenght = Math.Sqrt(dx*dx + dz*dz); 
+        direction = n2.getPos() - n1.getPos();
+        lenght = (float)Math.Sqrt(dx*dx + dz*dz); 
     }
 
     public Node getStart()
@@ -33,7 +35,7 @@ public class Edge
 
     public Node getEnd()
     {
-        return startNode;
+        return endNode;
     }
 
 }
