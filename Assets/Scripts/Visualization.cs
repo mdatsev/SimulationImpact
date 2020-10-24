@@ -31,6 +31,9 @@ public class Visualization : MonoBehaviour
 
         foreach (Vector2 p in startingPoints) {
             GameObject car = Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+            Car c = car.GetComponent<Car>();
+            Debug.Log(c.speed);
+
             cars.Add(car.GetComponent<Car>());        
         }
 
