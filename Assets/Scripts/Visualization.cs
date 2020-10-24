@@ -38,7 +38,7 @@ public class Visualization : MonoBehaviour
         traficLights.transform.parent = streetWire.transform;
         buildings.transform.parent = streetWire.transform;
 
-        //reader();
+        reader();
         Node test1 = new Node(new Vector3(0, 0, 0), false);
         Node test2 = new Node(new Vector3(20, 0, 1), false);
         Node test3 = new Node(new Vector3(22, 0, 10), false);
@@ -79,12 +79,7 @@ public class Visualization : MonoBehaviour
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
-                if(e.startNode.traficLight && i ==0) {
-                    Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
-                }
-
-                if (e.endNode.traficLight && i == prefsNum)
-                {
+                if(e.startNode.traficLight && (i == 0 || i == prefsNum)) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
 
