@@ -12,6 +12,10 @@ public class Camera : MonoBehaviour {
     private float yaw = 0f;
     private float pitch = 0f;
     
+    void Start() {
+        transform.eulerAngles = new Vector3(pitch, yaw, 0f);
+    }
+
     void Update ()
     {
         //Look around with Right Mouse
