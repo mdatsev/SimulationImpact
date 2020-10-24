@@ -12,10 +12,12 @@ public class Visualization : MonoBehaviour
     public bool useDummySim;
     public List<Vector2> startingPoints = new List<Vector2>();
     public GameObject street;
+    public GameObject building;
     public GameObject sidewalk;
     public GameObject traficL;
     public Map map = new Map();
-    public float decorationChance = 0;
+    public float decorationChance = 0.0f;
+    public float buildingChance = 0.3f;
 
     private Simulation sim;
     private List<Car> cars = new List<Car>();
@@ -29,23 +31,28 @@ public class Visualization : MonoBehaviour
         GameObject sidewalks = new GameObject("Sidewalks");
         GameObject traficLights = new GameObject("Sidewalks");
         GameObject decorations = new GameObject("Decorations");
+        GameObject buildings = new GameObject("Buildings");
         streets.transform.parent = streetWire.transform;
         sidewalks.transform.parent = streetWire.transform;
         decorations.transform.parent = streetWire.transform;
         traficLights.transform.parent = streetWire.transform;
+        buildings.transform.parent = streetWire.transform;
 
         reader();
         List<Edge> edg = map.edges;
 
-        //Node n1 = new Node(new Vector3(5, 0, 0));
-        //Node n2 = new Node(new Vector3(10, 0, 10));
+        //Node n1 = new Node(new Vector3(5, 0, 0), true);
+        //Node n2 = new Node(new Vector3(10, 0, 10), true);
 
-        //edg.Add(new Edge(n1, n2, 1, 1, 60));
+        //edg.Add(new Edge(n1, n2, 1, 1, 60, ""));
         Debug.Log(edg.Count);
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
         List<GameObject> decorationList = decorationListArray.ToList();
         System.Random rand = new System.Random();
+
+        GameObject[] buildingListArray = Resources.LoadAll<GameObject>("Prefabs/Buildings");
+        List<GameObject> buildingList = buildingListArray.ToList();
 
         foreach (Edge e in edg)
         {
@@ -68,6 +75,13 @@ public class Visualization : MonoBehaviour
                 if(e.getEnd().traficLight && i == prefsNum) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
+                
+                if (rand.NextDouble() < buildingChance && i > 5)
+                {
+                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                        , pos + normal * 8, rotation, buildings.transform);
+                }
+
                 Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
@@ -80,6 +94,12 @@ public class Visualization : MonoBehaviour
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
                         , pos - normal * 3, rotation, decorations.transform);
+                }
+                
+                if (rand.NextDouble() < buildingChance && i < prefsNum + 5)
+                {
+                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                        , pos - normal * 8, rotation, buildings.transform);
                 }
             }
         }
