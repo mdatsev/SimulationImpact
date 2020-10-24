@@ -11,7 +11,7 @@ namespace Simulations
             return;
         }
         public override void Step() {
-            foreach(Car car in cars) {
+            foreach(Car car in this.cars) {
                 car.Move();
             }
 

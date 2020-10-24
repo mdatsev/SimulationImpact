@@ -29,9 +29,10 @@ namespace Simulations {
             transform.position = (road.endNode.position - road.startNode.position) * (float)n;
         }
         public void changeRoad(Edge newRoad) {
-            position = position - road.length;
+            if (road != null) {
+                position = position - road.length;
+            }
             this.road = newRoad;
-
         }
     }
 }
