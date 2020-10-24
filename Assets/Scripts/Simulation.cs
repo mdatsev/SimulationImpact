@@ -1,18 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
 
-public class Simulation : MonoBehaviour
+namespace SimulationImpact
 {
-    // Start is called before the first frame update
-    void Start()
+    class Program
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        static void Main(string[] args)
+        {
+            Console.WriteLine("\nYe");
+        }
     }
 }
