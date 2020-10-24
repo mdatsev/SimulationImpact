@@ -8,6 +8,9 @@ namespace Simulations
     {
         public List<Car> cars;
 
+        public Car getCarInfront(Car c) {
+            return null;
+        }
         public abstract void Init(List<Car> cars);
         public abstract void Step();
     }

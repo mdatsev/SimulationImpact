@@ -26,7 +26,7 @@ public class Visualization : MonoBehaviour
 
         foreach (Edge e in edg)
         {
-            int numofprefs = (int)e.lenght / 4;
+            int numofprefs = (int)e.length / 4;
             Debug.Log(e.getStart().position.x + " patlak1 " + e.getStart().position.z);
             Debug.Log(e.getEnd().position.x + " patlak2 " + e.getEnd().position.z);
             Instantiate(street, new Vector3(e.getStart().position.x, 0, e.getStart().position.z), Quaternion.LookRotation(e.direction));
@@ -54,7 +54,7 @@ public class Visualization : MonoBehaviour
         foreach (Vector2 p in startingPoints) {
             GameObject car = Instantiate(carList[Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
             Car c = car.GetComponent<Car>();
-            Debug.Log(c.speed);
+            Debug.Log(c.velocity);
 
             cars.Add(car.GetComponent<Car>());        
         }
