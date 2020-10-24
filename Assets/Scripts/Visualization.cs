@@ -31,12 +31,12 @@ public class Visualization : MonoBehaviour
         sidewalks.transform.parent = streetWire.transform;
         decorations.transform.parent = streetWire.transform;
 
-        //reader();
+        reader();
         List<Edge> edg = map.edges;
-        Node n1 = new Node(new Vector3(5, 0, 0));
-        Node n2 = new Node(new Vector3(10, 0, 10));
+        //Node n1 = new Node(new Vector3(5, 0, 0));
+        //Node n2 = new Node(new Vector3(10, 0, 10));
 
-        edg.Add(new Edge(n1, n2, 1, 1, 60));
+        //edg.Add(new Edge(n1, n2, 1, 1, 60));
         Debug.Log(edg.Count);
 
         GameObject[] decorationListArray = Resources.LoadAll<GameObject>("Prefabs/Decorations");
@@ -81,12 +81,12 @@ public class Visualization : MonoBehaviour
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
-        foreach (Vector2 p in startingPoints) {
-            GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
-            Car c = car.GetComponent<Car>();
-            c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
-            cars.Add(c);        
-        }
+        // foreach (Vector2 p in startingPoints) {
+        //     GameObject car = Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], new Vector3(p.x, 0, p.y), Quaternion.identity);
+        //     Car c = car.GetComponent<Car>();
+        //     c.changeRoad(new Edge(new Node(new Vector3(0,0,0)), new Node(new Vector3(1,0,1)), 1, 1, 1));
+        //     cars.Add(c);        
+        // }
 
         sim.Init(cars);
     }
@@ -144,8 +144,8 @@ public class Visualization : MonoBehaviour
                     if(reader.Name == "nd") {
                         if(tagLast) {
                             currentNodes = new List<Node>();
-                        } else {
                             tagLast = false;
+                            curPoints = 0;
                         }
 
                         string newRef = reader.GetAttribute("ref");
@@ -156,7 +156,7 @@ public class Visualization : MonoBehaviour
 
                             float lat_e = float.Parse(nodes[newRef]["lat"]);
                             float lon_e = float.Parse(nodes[newRef]["lon"]);
-                            int scale = 10000;
+                            int scale = 100000;
 
                             Node start = new Node(new Vector3((float)(lat_s - Math.Floor(lat_s)) * scale, 0, (float)(lon_s - Math.Floor(lon_s)) * scale));
                             Node end = new Node(new Vector3((float)(lat_e - Math.Floor(lat_e)) * scale, 0, (float)(lon_e - Math.Floor(lon_e)) * scale));
@@ -172,22 +172,19 @@ public class Visualization : MonoBehaviour
                     }
                     else if(reader.Name == "tag"){
                         tagLast = true;
-                        for(int i = lastSegment; i < curSegment; i++) {
-                            if(reader.GetAttribute("k") == "highway") {
-                                for(int j = 0; j < currentNodes.Count; j+=2) {
-                                    map.addNode(currentNodes[j]);
-                                    map.addNode(currentNodes[j+1]);
-                                    
-                                    Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50);
-
-                                    map.addEdge(edge);
-
-                                }  
-
-                            }
-                            //list[i][2]["tags"][reader.GetAttribute("k")] = reader.GetAttribute("v");
+                        if(reader.GetAttribute("k") == "highway" /* && reader.GetAttribute("v") == "residential"*/) {
+                            //Debug.Log(currentNodes.Count);
+                            reader.Read();
+                            //Debug.Log(reader.GetAttribute("v"));
+                            for(int j = 0; j < currentNodes.Count; j+=2) {
+                                map.addNode(currentNodes[j]);
+                                map.addNode(currentNodes[j+1]);
+                                Edge edge = new Edge(currentNodes[j], currentNodes[j+1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z +" "+ currentNodes[j+1].position.x + " " + currentNodes[j+1].position.z);
+                                map.addEdge(edge);
+                            }  
                         }
                     }
+                    //curPoints = 0;
                 } while (reader.Name != "way");
             }
             lastSegment = curSegment;

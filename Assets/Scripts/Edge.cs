@@ -12,20 +12,22 @@ public class Edge
     public int backwardLanes;
     public int maxSpeed;
     public float length;
+    public string name;
     public Vector3 direction;
     public Stack<Car> cars;
 
-    public Edge(Node n1, Node n2,int fl,int bl,int maxs)
+    public Edge(Node n1, Node n2,int fl,int bl,int maxs, string n)
     {
         startNode = n1;
         endNode = n2;
         forwardLanes = fl;
         backwardLanes = bl;
         maxSpeed = maxs;
+        name = n;
         float dx = n2.getPos().x - n1.getPos().x;
         float dz = n2.getPos().z - n1.getPos().z;
         direction = n2.getPos() - n1.getPos();
-        length = (float)Math.Sqrt(dx*dx + dz*dz); 
+        length = (float)Math.Sqrt((dx*dx) + (dz*dz)); 
     }
 
     public Node getStart()
