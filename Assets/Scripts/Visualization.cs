@@ -31,7 +31,7 @@ public class Visualization : MonoBehaviour
         sidewalks.transform.parent = streetWire.transform;
         decorations.transform.parent = streetWire.transform;
 
-        // reader();
+        //reader();
         List<Edge> edg = map.edges;
         Node n1 = new Node(new Vector3(5, 0, 0));
         Node n2 = new Node(new Vector3(10, 0, 10));
