@@ -26,10 +26,11 @@ namespace Simulations
             //Debug.Log(this.deltaTime);
             foreach(Car c in this.cars) {
                 Car LV = getCarInfront(c, c.direction); // leading vehicle
-                if (LV == null && c.road.IsRedTrafficLight)
+               // Debug.Log(tf.canPass(c.direction == 1 ? c.road.startNode : c.road.endNode));
+                if (LV == null && !tf.canPass(c.direction == 1 ? c.road.startNode: c.road.endNode))
                 {
-                   // Debug.Log(c.road.length);
-                    //Debug.Log(c.position);
+                    Debug.Log(c.road.length);
+                    Debug.Log(c.position);
                     c.velocity = newVelocity(c.velocity, true, c.road.length - c.position, 0.0);
                 }
                 else

@@ -23,7 +23,7 @@ namespace Simulations {
             var perpendicular = new Vector3(-road.direction.z, 0, road.direction.x);
             var offset = - direction * perpendicular.normalized * 1.1f;
 
-            Debug.Log(String.Format("{0} {1} {2}", road.direction, perpendicular, offset));
+            //Debug.Log(String.Format("{0} {1} {2}", road.direction, perpendicular, offset));
             return road.startNode.position + (road.endNode.position - road.startNode.position) * (float)n + offset;
         }
 
