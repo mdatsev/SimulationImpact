@@ -366,7 +366,7 @@ MonoBehaviour:
   lookSpeedH: 2
   lookSpeedV: 2
   zoomSpeed: 2
-  moveSpeed: 12
+  moveSpeed: 40
 --- !u!850595691 &1117699181
 LightingSettings:
   m_ObjectHideFlags: 0
