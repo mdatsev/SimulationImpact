@@ -4,8 +4,8 @@ using System;
 
 public class TrafficLight
 {
-    public Edge road;
-    public float accTime;
+    public Node node;
+    public float accTime; //accumulated time
     public float changeTime;
 
 
