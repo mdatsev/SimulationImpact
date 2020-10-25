@@ -51,6 +51,7 @@ public class Visualization : MonoBehaviour
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
         map.addEdge(edgee2);
+        map.addEdge(edgee2);
         */
         List<Edge> edg = map.edges;
 
@@ -73,7 +74,10 @@ public class Visualization : MonoBehaviour
             e.backwardLanes = 1;
             StreetTile street = streetTiles[e.forwardLanes + e.backwardLanes - 1];
             int prefsNum = (int)Math.Ceiling(e.length / street.length);
-
+            bool complicatedEnd = false;
+            bool complicatedStart = false;
+            if (map.nodeNeighbours[e.endNode.AddId].Count > 2) { complicatedEnd = true; }
+            if (map.nodeNeighbours[e.startNode.AddId].Count > 2) { complicatedStart = true;  }
 
             for (int i=0; i <= prefsNum; i++)
             {
@@ -90,12 +94,8 @@ public class Visualization : MonoBehaviour
                 if(e.startNode.traficLight && (i == 0 || i == prefsNum)) {
                     Instantiate(traficL, pos + decorOffset, rotation, traficLights.transform);
                 }
-                if (map.nodeNeighbours[e.endNode.AddId].Count <= 2 && i == prefsNum)
-                {
 
-                }
-
-                if (rand.NextDouble() < buildingChance && i > 10)
+                if (rand.NextDouble() < buildingChance && i > 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos + normal * street.width * 2, rotation, buildings.transform);
@@ -115,7 +115,7 @@ public class Visualization : MonoBehaviour
                         , pos - decorOffset, rotation, decorations.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
+                if (rand.NextDouble() < buildingChance && i < prefsNum - 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos - normal * street.width * 2, rotation, buildings.transform);
@@ -128,6 +128,8 @@ public class Visualization : MonoBehaviour
         } else {
             sim = new SimulationImpact();
         }
+
+        /*startingPoints.Add(new Vector2(0,0));
         /*
         startingPoints.Add(new Vector2(0,0));
         //startingPoints.Add(new Vector2(1,1));
