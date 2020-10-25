@@ -16,10 +16,10 @@ namespace Simulations
             return c.road.getCarInfront(c, direction);
         }
 
-        public List<List<int, float>> getPoints(float x, float z) {
+        public List<List<float>> getPoints(float x, float z) {
             int rows = 60;
             int columns = 60;
-            List<List<int, float>> points = new List<List<int, float>>();
+            List<List<float>> points = new List<List<int, float>>();
 
             for(int row = 0; row < rows; row++) {
                 for(int column = 0; column < columns; column++) {
