@@ -40,20 +40,19 @@ public class Visualization : MonoBehaviour
         traficLights.transform.parent = streetWire.transform;
         buildings.transform.parent = streetWire.transform;
 
-        reader();
+        //reader();
         
-/*        Node test1 = new Node(new Vector3(0, 0, 0), false);
+      Node test1 = new Node(new Vector3(0, 0, 0), false);
         Node test2 = new Node(new Vector3(500, 0, 1), false);
         Node test3 = new Node(new Vector3(1000, 0, 100), false);
         Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
-        Edge edgee2 = new Edge(test2, test3, 1, 1, 1, "");    
+        Edge edgee2 = new Edge(test3, test2, 1, 1, 1, "");    
         map.addNode(test1);
         map.addNode(test2);
         map.addNode(test3);
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
         map.addEdge(edgee2);
-        map.addEdge(edgee2);*/
         
 
         List<Edge> edg = map.edges;
@@ -132,20 +131,25 @@ public class Visualization : MonoBehaviour
 
         double startingLength = 0;
         double incrase = 10;
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 2; i++)
         {
-            startingPoints.Add(startingLength);
-            startingLength += incrase;
+            startingPoints.Add(0);
         }
-        startingPoints.Add(0);
+
         //startingPoints.Add(new Vector2(1,1));
 
-        TrafficLight tf = new TrafficLight(edg[45]);
+        TrafficLight tf = new TrafficLight(edgee);
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
         sim.Init(cars, map, tf);
-        List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
+        //List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
+        List<Edge> path = new List<Edge>();
+        path.Add(edgee2);
+        path.Add(edgee);
+        List<Edge> path2 = new List<Edge>();
+        path2.Add(edgee);
+        path2.Add(edgee2);
         foreach (double p in startingPoints)
         {
             Car c = new Car();
@@ -155,6 +159,7 @@ public class Visualization : MonoBehaviour
             c.changeRoad(c.path[c.path.Count - 1]);
             gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c.WorldCoords(), Quaternion.identity));
             cars.Add(c);
+            path = path2;
         }
 
     }

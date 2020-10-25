@@ -15,11 +15,27 @@ public class Edge
     public float length;
     public string name;
     public Vector3 direction;
-    private List<Car> cars;
+    private List<Car> forward_cars;
+    private List<Car> backward_cars;
 
 
-    public Car getCarInfront(Car c)
+    private List<Car> getCarList(int direction)
     {
+        List<Car> cars;
+        if (direction == 1)
+        {
+            cars = forward_cars;
+        }
+        else
+        {
+            cars = backward_cars;
+        }
+        return cars;
+    }
+
+    public Car getCarInfront(Car c, int direction)
+    {
+        List<Car> cars = getCarList(direction);
         Car infront = null;
         int newCarIdx = cars.IndexOf(c) + 1;
         if (cars.Count > newCarIdx)
@@ -28,8 +44,9 @@ public class Edge
         }
         return infront;
     }
-    public Car getLastCar()
+    public Car getLastCar(int direction)
     {
+        List<Car> cars = getCarList(direction);
         Car lastCar = null;
         if(cars.Count > 0)
         {
@@ -38,14 +55,16 @@ public class Edge
         return lastCar;
     }
 
-    public void RemoveCar(Car c)
+    public void RemoveCar(Car c, int direction)
     {
+        List<Car> cars = getCarList(direction);
         cars.Remove(c);
        // Debug.Log(cars.Count);
     }
 
-    public void AddCar(Car c)
+    public void AddCar(Car c, int direction)
     {
+        List<Car> cars = getCarList(direction);
         cars.Add(c);
         cars.Sort(delegate (Car c1, Car c2) {
             return (int)(c1.position - c2.position);
@@ -64,7 +83,8 @@ public class Edge
         float dz = n2.position.z - n1.position.z;
         direction = n2.position - n1.position;
         length = (float)Math.Sqrt((dx * dx) + (dz * dz));
-        cars = new List<Car>();
+        forward_cars = new List<Car>();
+        backward_cars = new List<Car>();
     }
 
 }
