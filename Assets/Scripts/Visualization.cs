@@ -60,6 +60,7 @@ public class Visualization : MonoBehaviour
         map.addEdge(edgeS);
 
         tf = new TrafficLight(test1, true, map);
+        tf.changeTime = 15;
 
         List<Edge> path = new List<Edge>();
         Car c1 = new Car();
@@ -170,34 +171,22 @@ public class Visualization : MonoBehaviour
         }
 
     }
-    /*
+    
     void BasicMap(GameObject[] carListArray)
     {
-        reader();
-        // reader();
         List<GameObject> carList = carListArray.ToList();
-        List<Edge> path = new List<Edge>();
         Car c1 = new Car();
-        //path.Add(edgeE);
-        //path.Add(edgeS);
-        path.Add(edgeW);
-        path.Add(edgeE);
-        c1.path = sim.calculatePath(map.node, map.node);
+        c1.path = sim.calculatePath(map.edges[0].startNode, map.edges[24].endNode);
         c1.position = 0;
         c1.changeRoad(c1.path[c1.path.Count - 1]);
         gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c1.WorldCoords(), Quaternion.identity));
 
         Car c2 = new Car();
-        path = new List<Edge>();
-        //path.Add(edgeN);
-        //path.Add(edgeE);
-        path.Add(edgeE);
-        path.Add(edgeW);
-        c2.path = path;
+        c2.path = sim.calculatePath(map.edges[25].startNode, map.edges[1].endNode); ;
         c2.position = 0;
         c2.changeRoad(c2.path[c2.path.Count - 1]);
         gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c2.WorldCoords(), Quaternion.identity));
-    }*/
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -217,9 +206,19 @@ public class Visualization : MonoBehaviour
 
         // IF HERE FOR SCENARIOUS func(carListArray)
 
+        if (useDummySim)
+        {
+            sim = new SimulationDummy();
+        }
+        else
+        {
+            sim = new SimulationImpact();
+        }
         //Crossroad(carListArray);
         //Intersect(carListArray);
+        //reader();
         //BasicMap(carListArray);
+  
 
         List<Edge> edg = map.edges;
 
@@ -298,7 +297,7 @@ public class Visualization : MonoBehaviour
                 }
             }
         }
-    
+
         // int n = 40;
         // for (int x = (int)Math.Floor(br.x); x < (int)Math.Ceiling(tl.x);x += 50) {
         //     for (int z = (int)Math.Floor(br.z); z < (int)Math.Ceiling(tl.z);z += 50) {
@@ -309,17 +308,13 @@ public class Visualization : MonoBehaviour
         //     }
         // }
 
-        if (useDummySim) {
-            sim = new SimulationDummy();
-        } else {
-            sim = new SimulationImpact();
-        }
+
 
         sim.Init(cars, map, tf);
+
         //sim.Init(cars, map, new TrafficLight(edgeS));
 
         //Test1();
-
 
 
     }
