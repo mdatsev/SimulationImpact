@@ -15,31 +15,31 @@ namespace Simulations
         public Car getCarInfront(Car c, int direction) {
             return c.road.getCarInfront(c, direction);
         }
-        /*
-        public List<List<float>> getPoints(float x, float z) {
+
+
+        public List<float> getPoints(float x, float z) {
             int rows = 60;
             int columns = 60;
-            List<List<float>> points = new List<List<int, float>>();
+            List<float> points = new List<float>();
 
             for(int row = 0; row < rows; row++) {
                 for(int column = 0; column < columns; column++) {
+                    float vel = 0;
+                    float detected = 0;
                     foreach (Car c in cars) {
                         Vector3 vec = c.WorldCoords();
-
                         if(vec.x > (row + x) && vec.x < (row  + x + 1) && (vec.z + z) > column && (vec.z + z + 1) < column) {
-                            points[row][column][0] = 1;
-                            points[row][column][1] = c.velocity;
-                        } else {
-                            points[row][column][0] = 0;
-                            points[row][column][1] = 0;
+                            vel = 1;
+                            detected = (float)c.velocity;
                         }
-
                     }
+                    points.Add(vel);
+                    points.Add(detected);
                 }
             }
 
             return points;
-        }*/
+        }
 
         public List<Edge> calculatePath(Node startingNode, Node destination)
         {

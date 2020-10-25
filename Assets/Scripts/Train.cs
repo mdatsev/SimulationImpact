@@ -11,12 +11,17 @@ public class Train : MonoBehaviour
 {
     System.Threading.Thread SocketThread;
     volatile bool keepReading = false;
-    private Simulation sim = new SimulationImpcat();
+    private Simulation sim = new SimulationImpact();
+
+
 
     void Start()
     {
         Debug.Log("Starting");
         Application.runInBackground = true;
+
+        sim.Init(new List<Car>(), new Map(), null);
+        
         startServer();
     }
 
@@ -70,14 +75,18 @@ public class Train : MonoBehaviour
                 {
                     bytes = new byte[1024];
                     int bytesRec = handler.Receive(bytes);
-                    Debug.Log(Encoding.ASCII.GetString(bytes, 0, bytesRec));
+                    Debug.Log("Getting batch.");
+                    handler.NoDelay = true;
+                    int reward = 1;
+                    handler.Send(Encoding.ASCII.GetBytes(String.Format("{0}\n", reward)));
                     
-                    List<List<float>> result = sim.getPoints(0,0);
-                    for(int row = 0; row < 60 ; row++) {
-                        for (int col = 0; col < 60; col) {
-                            handler.Send(Encoding.ASCII.GetBytes(String.Format("{0}, {1}", result[row][col])));
-                        }
+                    List<float> result = sim.getPoints(0,0);
+                    Debug.Log(result.Count);
+                    for(int row = 0; row < result.Count; row++) {
+                        handler.Send(Encoding.ASCII.GetBytes(String.Format("{0}\n", result[row])));
                     }
+                    handler.Send(Encoding.ASCII.GetBytes("!"));
+                    handler.Close();
                     break;
                     if (bytesRec <= 0)
                     {
