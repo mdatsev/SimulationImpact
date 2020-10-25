@@ -15,7 +15,7 @@ namespace Simulations
         public Car getCarInfront(Car c, int direction) {
             return c.road.getCarInfront(c, direction);
         }
-
+        /*
         public List<List<float>> getPoints(float x, float z) {
             int rows = 60;
             int columns = 60;
@@ -39,7 +39,7 @@ namespace Simulations
             }
 
             return points;
-        }
+        }*/
 
         public List<Edge> calculatePath(Node startingNode, Node destination)
         {

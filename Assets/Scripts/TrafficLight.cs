@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TrafficLight
 {
-    public Edge road;
+    public Node node;
     public float accTime; //accumulated time
     public float changeTime;
     bool intersection;
@@ -17,12 +17,15 @@ public class TrafficLight
         changeTime = 25; //+ (new Random().Next(10, 40));
         node = n;
         this.intersection = intersection;
-        if(intersection && map.nodeNeighbours[node.AddId].Count == 4)
+        if (intersection && map.nodeNeighbours[node.AddId].Count == 4)
         {
+
             int idx = 0;
             foreach (Tuple<Node, float> t in map.nodeNeighbours[node.AddId])
             {
-                degree[idx] = new Tuple<float, Node> (Vector3.Angle(t.Item1.position - node.position, new Vector3(0, 0, 1)), t.Item1);
+                degree[idx] = new Tuple<float, Node> ((float)Math.Atan2(
+                    t.Item1.position.x * node.position.z - t.Item1.position.z * node.position.x,
+                    t.Item1.position.x * node.position.x - t.Item1.position.z * node.position.z), t.Item1);
                 idx++;
             }
             Array.Sort(degree, delegate (Tuple<float, Node> f1, Tuple<float, Node> f2)
@@ -39,9 +42,10 @@ public class TrafficLight
         {
             for(int i = 0; i < 4; i++)
             {
+                Debug.Log(degree[i].Item1);
                 if(degree[i].Item2 == from)
                 {
-                    return !((blockedEven && i %2 == 0) || (!blockedEven && i % 2 == 1));
+                    return !(blockedEven && (i == 0 || i == 1) || (!blockedEven && (i == 2 || i == 3)));
                 }
             }
             return true;

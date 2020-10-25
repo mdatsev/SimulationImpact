@@ -7,7 +7,7 @@ namespace Simulations
 {
     public class SimulationImpact : Simulation
     {
-        const double b = 4; // decel rate
+        const double b = 1; // decel rate
         const double reactionTime = 1.1; // reaction time / timestep
         const double S0 = 3; // min gap
         const double a = 1.5; // acceleration
@@ -29,8 +29,8 @@ namespace Simulations
                // Debug.Log(tf.canPass(c.direction == 1 ? c.road.startNode : c.road.endNode));
                 if (LV == null && !tf.canPass(c.direction == 1 ? c.road.startNode: c.road.endNode))
                 {
-                    Debug.Log(c.road.length);
-                    Debug.Log(c.position);
+                    //Debug.Log(c.road.length);
+                    //Debug.Log(c.position);
                     c.velocity = newVelocity(c.velocity, true, c.road.length - c.position, 0.0);
                 }
                 else

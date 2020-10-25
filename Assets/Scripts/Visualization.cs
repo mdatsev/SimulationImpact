@@ -24,21 +24,24 @@ public class Visualization : MonoBehaviour
     private List<Car> cars = new List<Car>();
     private List<GameObject> gameCars = new List<GameObject>();
     private GameObject streetWire;
+    private TrafficLight tf;
 
-    private void Test1()
+    private void Intersect(GameObject[] carListArray)
     {
         // reader();
-        Map map = new Map();
-
-        GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
 
 
         Node test1 = new Node(new Vector3(0, 0, 0), false);
+        test1.Id = "1";
         Node test2 = new Node(new Vector3(100, 0, 0), false);
+        test2.Id = "2";
         Node test3 = new Node(new Vector3(0, 0, 100), false);
+        test3.Id = "3";
         Node test4 = new Node(new Vector3(-100, 0, 0), false);
+        test4.Id = "4";
         Node test5 = new Node(new Vector3(0, 0, -100), false);
+        test5.Id = "5";
 
         Edge edgeE = new Edge(test2, test1, 1, 1, 1, "");
         Edge edgeN = new Edge(test3, test1, 1, 1, 1, "");
@@ -56,40 +59,50 @@ public class Visualization : MonoBehaviour
         map.addEdge(edgeW);
         map.addEdge(edgeS);
 
+        tf = new TrafficLight(test1, true, map);
+
         List<Edge> path = new List<Edge>();
         Car c1 = new Car();
-        path.Add(edgeW);
+        //path.Add(edgeE);
         //path.Add(edgeS);
+        path.Add(edgeW);
+        path.Add(edgeE);
         c1.path = path;
         c1.position = 0;
-        c1.changeRoad(edgeW);
+        c1.changeRoad(c1.path[c1.path.Count - 1]);
         gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c1.WorldCoords(), Quaternion.identity));
 
         Car c2 = new Car();
         path = new List<Edge>();
-        path.Add(edgeS);
-        //path.Add(edgeW);
+        //path.Add(edgeN);
+        //path.Add(edgeE);
+        path.Add(edgeE);
+        path.Add(edgeW);
         c2.path = path;
         c2.position = 0;
-        c2.changeRoad(edgeS);
+        c2.changeRoad(c2.path[c2.path.Count - 1]);
         gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c2.WorldCoords(), Quaternion.identity));
 
         Car c3 = new Car();
         path = new List<Edge>();
-        path.Add(edgeE);
-        //path.Add(edgeW);
+       // path.Add(edgeW);
+        //path.Add(edgeN);
+        path.Add(edgeN);
+        path.Add(edgeS);
         c3.path = path;
         c3.position = 0;
-        c3.changeRoad(edgeE);
+        c3.changeRoad(c3.path[c3.path.Count - 1]);
         gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c3.WorldCoords(), Quaternion.identity));
 
         Car c4 = new Car();
         path = new List<Edge>();
-        path.Add(edgeW);
-        //path.Add(edgeE);
+        //path.Add(edgeS);
+        //path.Add(edgeW);
+        path.Add(edgeS);
+        path.Add(edgeN);
         c4.path = path;
         c4.position = 0;
-        c4.changeRoad(edgeW);
+        c4.changeRoad(c4.path[c4.path.Count - 1]);
         gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c4.WorldCoords(), Quaternion.identity));
 
         cars.Add(c1);
@@ -97,6 +110,94 @@ public class Visualization : MonoBehaviour
         cars.Add(c3);
         cars.Add(c4);
     }
+
+    void Crossroad(GameObject[] carListArray)
+    {
+        Node test1 = new Node(new Vector3(0, 0, 0), false);
+        Node test2 = new Node(new Vector3(500, 0, 0), false);
+        Node test3 = new Node(new Vector3(1000, 0, 100), false);
+        /*Node test4 = new Node(new Vector3(0, 0, 500), false);
+        */
+        Edge edge = new Edge(test1, test2, 1, 1, 1, "");
+        Edge edge2 = new Edge(test3, test2, 1, 1, 1, "");
+        //Edge edge3 = new Edge(test1, test3, 1, 1, 1, "");
+        //Edge edge4 = new Edge(test1, test3, 1, 1, 1, "");
+        map.addNode(test1);
+        map.addNode(test2);
+        map.addNode(test3);
+        /*
+        map.addNode(test4);
+        */
+        //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
+        map.addEdge(edge);
+        map.addEdge(edge2);
+        double startingLength = 0;
+        double incrase = 10;
+        for (int i = 0; i < 10; i++)
+        {
+            startingPoints.Add(startingLength);
+            if (i % 2 == 0)
+            {
+                startingLength += incrase;
+            }
+        }
+        //startingPoints.Add(new Vector2(1,1));
+
+        tf = new TrafficLight(test2, false, map);
+
+        List<GameObject> carList = carListArray.ToList();
+
+        int idx = 0;
+        foreach (double p in startingPoints)
+        {
+            List<Edge> path = new List<Edge>();
+            path.Add(edge2);
+            path.Add(edge);
+            List<Edge> path2 = new List<Edge>();
+            path2.Add(edge);
+            path2.Add(edge2);
+            // //List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
+            // //List<Edge> path2 = sim.calculatePath(edg[47].startNode, edg[32].endNode);
+            Car c = new Car();
+            c.position = p;
+            //c.velocity = (double)UnityEngine.Random.Range(2.0F, 3.0F);
+            c.path = ((idx % 2 == 0) ? path : path2);
+            Debug.Log(c.path.Count);
+            c.changeRoad(c.path[c.path.Count - 1]);
+            gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c.WorldCoords(), Quaternion.identity));
+            cars.Add(c);
+            idx++;
+        }
+
+    }
+    /*
+    void BasicMap(GameObject[] carListArray)
+    {
+        reader();
+        // reader();
+        List<GameObject> carList = carListArray.ToList();
+        List<Edge> path = new List<Edge>();
+        Car c1 = new Car();
+        //path.Add(edgeE);
+        //path.Add(edgeS);
+        path.Add(edgeW);
+        path.Add(edgeE);
+        c1.path = sim.calculatePath(map.node, map.node);
+        c1.position = 0;
+        c1.changeRoad(c1.path[c1.path.Count - 1]);
+        gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c1.WorldCoords(), Quaternion.identity));
+
+        Car c2 = new Car();
+        path = new List<Edge>();
+        //path.Add(edgeN);
+        //path.Add(edgeE);
+        path.Add(edgeE);
+        path.Add(edgeW);
+        c2.path = path;
+        c2.position = 0;
+        c2.changeRoad(c2.path[c2.path.Count - 1]);
+        gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c2.WorldCoords(), Quaternion.identity));
+    }*/
     // Start is called before the first frame update
     void Start()
     {
@@ -114,23 +215,11 @@ public class Visualization : MonoBehaviour
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         //reader();
 
-        Node test1 = new Node(new Vector3(500, 0, 0), false);
-        Node test2 = new Node(new Vector3(-500, 0, 0), false);
-        Node test3 = new Node(new Vector3(0, 0, -500), false);
-        Node test4 = new Node(new Vector3(0, 0, 500), false);
+        // IF HERE FOR SCENARIOUS func(carListArray)
 
-        Edge edge = new Edge(test1, test2, 1, 1, 1, "");
-        Edge edge2 = new Edge(test3, test4, 1, 1, 1, "");
-        //Edge edge3 = new Edge(test1, test3, 1, 1, 1, "");
-        //Edge edge4 = new Edge(test1, test3, 1, 1, 1, "");
-
-        map.addNode(test1);
-        map.addNode(test2);
-        map.addNode(test3);
-        map.addNode(test4);
-        //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
-        map.addEdge(edge);
-        map.addEdge(edge2);
+        //Crossroad(carListArray);
+        //Intersect(carListArray);
+        //BasicMap(carListArray);
 
         List<Edge> edg = map.edges;
 
@@ -226,40 +315,13 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
-        //sim.Init(cars, map, new TrafficLight(edgeS));
-        
-        //Test1();
-        double startingLength = 0;
-        double incrase = 10;
-        for (int i = 0; i < 2; i++)
-        {
-            startingPoints.Add(0);
-        }
-        //startingPoints.Add(new Vector2(1,1));
-
-        TrafficLight tf = new TrafficLight(test2, false, map);
-
-        List<GameObject> carList = carListArray.ToList();
         sim.Init(cars, map, tf);
-        List<Edge> path = new List<Edge>();
-        path.Add(edge2);
-        path.Add(edge);
-        List<Edge> path2 = new List<Edge>();
-        path2.Add(edge);
-        path2.Add(edge2);
-        foreach (double p in startingPoints)
-        {
-        // //List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
-        // //List<Edge> path2 = sim.calculatePath(edg[47].startNode, edg[32].endNode);
-            Car c = new Car();
-            c.position = 0;
-            //c.velocity = (double)UnityEngine.Random.Range(2.0F, 3.0F);
-            c.path = path;
-            c.changeRoad(c.path[c.path.Count - 1]);
-            gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c.WorldCoords(), Quaternion.identity));
-            cars.Add(c);
-            path = path2;
-        }
+        //sim.Init(cars, map, new TrafficLight(edgeS));
+
+        //Test1();
+
+
+
     }
 
     void reader()
@@ -276,7 +338,7 @@ public class Visualization : MonoBehaviour
 
         //Dictionary<string, Dictionary<string, Dictionary<string, string>> wayMap = new Dictionary<string, Dictionary<string, Dictionary<string, string>>();
         List<List<Dictionary<string, Dictionary<string, string>>>> list = new List<List<Dictionary<string, Dictionary<string, string>>>>();
-        XmlReader reader = XmlReader.Create("./geo-milev-2.osm", settings);
+        XmlReader reader = XmlReader.Create("./geo-milev.osm", settings);
         
         reader.ReadToFollowing("node");
         string id = "";
