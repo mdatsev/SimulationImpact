@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TrafficLight
 {
-    public Node node;
+    public Edge road;
     public float accTime; //accumulated time
     public float changeTime;
     bool intersection;

@@ -11,8 +11,8 @@ public class Train : MonoBehaviour
 {
     System.Threading.Thread SocketThread;
     volatile bool keepReading = false;
-    private Simulation sim;
-    
+    private Simulation sim = new SimulationImpcat();
+
     void Start()
     {
         Debug.Log("Starting");
@@ -71,7 +71,14 @@ public class Train : MonoBehaviour
                     bytes = new byte[1024];
                     int bytesRec = handler.Receive(bytes);
                     Debug.Log(Encoding.ASCII.GetString(bytes, 0, bytesRec));
-                    // handler.Send(bytes);
+                    
+                    List<List<float>> result = sim.getPoints(0,0);
+                    for(int row = 0; row < 60 ; row++) {
+                        for (int col = 0; col < 60; col) {
+                            handler.Send(Encoding.ASCII.GetBytes(String.Format("{0}, {1}", result[row][col])));
+                        }
+                    }
+                    break;
                     if (bytesRec <= 0)
                     {
                         keepReading = false;
