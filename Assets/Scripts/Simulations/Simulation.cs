@@ -16,6 +16,29 @@ namespace Simulations
             return c.road.getCarInfront(c, direction);
         }
 
+        public List<List<int>> getPoints(float x, float z) {
+            int rows = 60;
+            int columns = 60;
+            List<List<int>> points = new List<List<int>>();
+
+            for(int row = 0; row < rows; row++) {
+                for(int column = 0; column < columns; column++) {
+                    foreach (Car c in cars) {
+                        Vector3 vec = c.WorldCoords();
+
+                        if(vec.x > (row + x) && vec.x < (row  + x + 1) && (vec.z + z) > column && (vec.z + z + 1) < column) {
+                            points[row][column] = 1;
+                        } else {
+                            points[row][column] = 0;
+                        }
+
+                    }
+                }
+            }
+
+            return points;
+        }
+
         public List<Edge> calculatePath(Node startingNode, Node destination)
         {
             float[] dist = new float[map.nodeCount];
