@@ -237,7 +237,7 @@ public class Visualization : MonoBehaviour
         }
         //startingPoints.Add(new Vector2(1,1));
 
-        TrafficLight tf = new TrafficLight(edge);
+        TrafficLight tf = new TrafficLight(test2, false, map);
 
         List<GameObject> carList = carListArray.ToList();
         sim.Init(cars, map, tf);
