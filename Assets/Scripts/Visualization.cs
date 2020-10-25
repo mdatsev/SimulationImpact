@@ -12,6 +12,7 @@ public class Visualization : MonoBehaviour
     public bool useDummySim;
     public List<double> startingPoints = new List<double>();
     public GameObject street;
+    public List<StreetTile> streetTiles;
     public GameObject building;
     public GameObject sidewalk;
     public GameObject traficL;
@@ -52,6 +53,7 @@ public class Visualization : MonoBehaviour
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
         map.addEdge(edgee2);
+        map.addEdge(edgee2);
         */
 
         List<Edge> edg = map.edges;
@@ -71,7 +73,12 @@ public class Visualization : MonoBehaviour
 
         foreach (Edge e in edg)
         {
-            int prefsNum = (int)Math.Ceiling(e.length / 100);
+            StreetTile street = streetTiles[Math.Min(e.forwardLanes + e.backwardLanes - 1, 1)];
+            int prefsNum = (int)Math.Ceiling(e.length / street.length);
+            bool complicatedEnd = false;
+            bool complicatedStart = false;
+            if (map.nodeNeighbours[e.endNode.AddId].Count > 2) { complicatedEnd = true; }
+            if (map.nodeNeighbours[e.startNode.AddId].Count > 2) { complicatedStart = true;  }
 
             for (int i=0; i <= prefsNum; i++)
             {
@@ -80,45 +87,39 @@ public class Visualization : MonoBehaviour
                 Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
                 Vector3 pos = new Vector3(x, 0, z);
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
+                Vector3 decorOffset = normal * (street.width / 2 + 1);
+                Vector3 buildingOffset = normal * (street.width / 2 + 2) * 2;
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
-                if(e.startNode.traficLight && i ==0) {
-                    Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
-                }
-                if (e.endNode.traficLight && i == prefsNum)
-                {
-                    Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
-                }
-                if (map.nodeNeighbours[e.endNode.AddId].Count <= 2 && i == prefsNum)
-                {
-
+                if(e.startNode.traficLight && (i == 0 || i == prefsNum)) {
+                    Instantiate(traficL, pos + decorOffset, rotation, traficLights.transform);
                 }
 
-                if (rand.NextDouble() < buildingChance && i > 10)
+                if (rand.NextDouble() < buildingChance && i > 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos + normal * 8, rotation, buildings.transform);
+                        , pos + buildingOffset, rotation, buildings.transform);
                 }
 
-                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                Instantiate(sidewalk, pos + decorOffset, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos + normal * 3, rotation, decorations.transform);
+                        , pos + decorOffset, rotation, decorations.transform);
                 }
 
                 rotation *= Quaternion.Euler(0, 180, 0);
     //right side
-                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+                Instantiate(sidewalk, pos - decorOffset, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos - normal * 3, rotation, decorations.transform);
+                        , pos - decorOffset, rotation, decorations.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
+                if (rand.NextDouble() < buildingChance && i < prefsNum - 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos - normal * 8, rotation, buildings.transform);
+                        , pos - buildingOffset, rotation, buildings.transform);
                 }
             }
         }
@@ -128,6 +129,8 @@ public class Visualization : MonoBehaviour
         } else {
             sim = new SimulationImpact();
         }
+
+        /*startingPoints.Add(new Vector2(0,0));
         /*
         double startingLength = 0;
         double incrase = 15;
@@ -208,10 +211,15 @@ public class Visualization : MonoBehaviour
 
         List<string> currentNodes = new List<string>();
         //List<Edge> currentEdge = new List<Edge>();
-        Debug.Log("DEEDE");
+
         float lat_start = 0;
         float lon_start = 0;
         bool firstRoad = true;
+        
+        int forwardLanes = 1;
+        int backwardLanes = 1;
+        
+        bool toAdd = false;
         do
         {   
             if(reader.IsStartElement()) {
@@ -259,20 +267,38 @@ public class Visualization : MonoBehaviour
                     }
                     else if(reader.Name == "tag"){
                         tagLast = true;
+
                         if(reader.GetAttribute("k") == "highway" && reader.GetAttribute("v") != "footway") {
-                            reader.Read();
+                            //reader.Read();
                             //Debug.Log(currentNodes.Count);
-                            for(int j = 0; j < currentNodes.Count; j+=2) {
-                                Node startNode = map.nodes[currentNodes[j]];
-                                Node endNode = map.nodes[currentNodes[j+1]];
-                                Edge edge = new Edge(startNode, endNode, 1, 1, 50, reader.GetAttribute("v") + startNode.position.x + " " + startNode.position.z +" "+ endNode.position.x + " " + endNode.position.z);
-                                map.addEdge(edge);
-                                //Debug.Log(edge);
-                            }  
+                            toAdd = true;
+                        }
+
+                        if(reader.GetAttribute("k") == "lanes" && toAdd) {
+                            forwardLanes = int.Parse(reader.GetAttribute("v"));
+                        }
+                        if(reader.GetAttribute("k") == "oneway" && toAdd) {
+                            if(reader.GetAttribute("v") == "no") {
+                                backwardLanes = forwardLanes;
+                            } else {
+                                backwardLanes = 0;
+                            }
                         }
                     }
                     //curPoints = 0;
                 } while (reader.Name != "way");
+                if(toAdd){
+                    for(int j = 0; j < currentNodes.Count; j+=2) {
+                        Node startNode = map.nodes[currentNodes[j]];
+                        Node endNode = map.nodes[currentNodes[j+1]];
+
+                        Edge edge = new Edge(startNode, endNode, forwardLanes, backwardLanes, 50, reader.GetAttribute("v") + startNode.position.x + " " + startNode.position.z +" "+ endNode.position.x + " " + endNode.position.z);
+                        map.addEdge(edge);
+                    }
+                }
+                toAdd = false;
+                backwardLanes = 1;
+                forwardLanes = 1;
             }
             lastSegment = curSegment;
             reader.Read();
