@@ -70,9 +70,7 @@ public class Visualization : MonoBehaviour
 
         foreach (Edge e in edg)
         {
-            e.forwardLanes = 0;
-            e.backwardLanes = 1;
-            StreetTile street = streetTiles[e.forwardLanes + e.backwardLanes - 1];
+            StreetTile street = streetTiles[Math.Min(e.forwardLanes + e.backwardLanes - 1, 1)];
             int prefsNum = (int)Math.Ceiling(e.length / street.length);
             bool complicatedEnd = false;
             bool complicatedStart = false;
@@ -86,7 +84,6 @@ public class Visualization : MonoBehaviour
                 Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
                 Vector3 pos = new Vector3(x, 0, z);
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
-                Debug.Log(street.width);
                 Vector3 decorOffset = normal * (street.width / 2 + 1);
                 Vector3 buildingOffset = normal * (street.width / 2 + 2) * 2;
 
@@ -164,7 +161,7 @@ public class Visualization : MonoBehaviour
 
         //Dictionary<string, Dictionary<string, Dictionary<string, string>> wayMap = new Dictionary<string, Dictionary<string, Dictionary<string, string>>();
         List<List<Dictionary<string, Dictionary<string, string>>>> list = new List<List<Dictionary<string, Dictionary<string, string>>>>();
-        XmlReader reader = XmlReader.Create("./berlin.osm", settings);
+        XmlReader reader = XmlReader.Create("./center.osm", settings);
         
         reader.ReadToFollowing("node");
         string id = "";
@@ -205,6 +202,11 @@ public class Visualization : MonoBehaviour
         float lat_start = 0;
         float lon_start = 0;
         bool firstRoad = true;
+        
+        int forwardLanes = 1;
+        int backwardLanes = 1;
+        
+        bool toAdd = false;
         do
         {   
             if(reader.IsStartElement()) {
@@ -250,20 +252,38 @@ public class Visualization : MonoBehaviour
                     }
                     else if(reader.Name == "tag"){
                         tagLast = true;
+
                         if(reader.GetAttribute("k") == "highway" && reader.GetAttribute("v") != "footway") {
-                            reader.Read();
+                            //reader.Read();
                             //Debug.Log(currentNodes.Count);
-                            for(int j = 0; j < currentNodes.Count; j+=2) {
-                                Node startNode = map.nodes[currentNodes[j]];
-                                Node endNode = map.nodes[currentNodes[j+1]];
-                                Edge edge = new Edge(startNode, endNode, 1, 1, 50, reader.GetAttribute("v") + startNode.position.x + " " + startNode.position.z +" "+ endNode.position.x + " " + endNode.position.z);
-                                map.addEdge(edge);
-                                //Debug.Log(edge);
-                            }  
+                            toAdd = true;
+                        }
+
+                        if(reader.GetAttribute("k") == "lanes" && toAdd) {
+                            forwardLanes = int.Parse(reader.GetAttribute("v"));
+                        }
+                        if(reader.GetAttribute("k") == "oneway" && toAdd) {
+                            if(reader.GetAttribute("v") == "no") {
+                                backwardLanes = forwardLanes;
+                            } else {
+                                backwardLanes = 0;
+                            }
                         }
                     }
                     //curPoints = 0;
                 } while (reader.Name != "way");
+                if(toAdd){
+                    for(int j = 0; j < currentNodes.Count; j+=2) {
+                        Node startNode = map.nodes[currentNodes[j]];
+                        Node endNode = map.nodes[currentNodes[j+1]];
+
+                        Edge edge = new Edge(startNode, endNode, forwardLanes, backwardLanes, 50, reader.GetAttribute("v") + startNode.position.x + " " + startNode.position.z +" "+ endNode.position.x + " " + endNode.position.z);
+                        map.addEdge(edge);
+                    }
+                }
+                toAdd = false;
+                backwardLanes = 1;
+                forwardLanes = 1;
             }
             lastSegment = curSegment;
             reader.Read();
