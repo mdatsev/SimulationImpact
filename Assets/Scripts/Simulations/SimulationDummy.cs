@@ -6,11 +6,12 @@ namespace Simulations
 {
     public class SimulationDummy : Simulation
     {
-        public override void Init(List<Car> cars, TrafficLight tf) {
+        public override void Init(List<Car> cars, Map map, TrafficLight tf) {
             this.cars = cars;
+            this.map = map;
             return;
         }
-        public override void Step(int frames) {
+        public override void Step(float deltaTime) {
             foreach(Car car in this.cars) {
                 car.Move();
             }

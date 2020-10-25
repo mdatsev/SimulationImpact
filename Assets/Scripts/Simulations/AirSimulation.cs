@@ -10,6 +10,10 @@ namespace Simulations
         public int width;
         public int height;
         public List<double> grid;
+        public float fartChance = 0.01f;
+
+        private System.Random rand = new System.Random();
+
         public AirSimulation() {
             width = 0;
         }
@@ -33,6 +37,11 @@ namespace Simulations
 
         public void Step() {
             var lastGrid = new List<double>(grid);
+
+            if (rand.NextDouble() < fartChance) {
+                grid[rand.Next(width * height)] = rand.NextDouble() * 1;
+            }
+
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     double val = get(lastGrid, x, y);
@@ -53,8 +62,8 @@ namespace Simulations
                         if(val > neighVals[k])
                         {
                             double amount = ((val - lastGrid[idx]) / basePortion / dist[k]);
-                            grid[idx] += amount;
-                            grid[x + width * y] -= amount;
+                            grid[idx] += amount * 0.1f;
+                            grid[x + width * y] -= amount * 0.11f;
                         }
                     }
                 }

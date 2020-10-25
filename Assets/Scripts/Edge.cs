@@ -41,7 +41,7 @@ public class Edge
     public void RemoveCar(Car c)
     {
         cars.Remove(c);
-        Debug.Log(cars.Count);
+       // Debug.Log(cars.Count);
     }
 
     public void AddCar(Car c)
