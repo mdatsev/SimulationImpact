@@ -23,14 +23,16 @@ public class Map
             nodes.Add(node.Id, node);
             nodeCount++;
             nodeNeighbours.Add(new List<Tuple<Node, float>>());
+            //Debug.Log("Node " + nodeCount);
         }
         else
         {
-            //Debug.Log(nodeNeighbours[node.Id].Count);
+            //Debug.Log("CONTAINED");
         }
     }
 
     private void addNeighbourIfExists(Node s, Node e, float length) {
+        //Debug.Log(nodeNeighbours.Count);
         if (nodeNeighbours.Count > s.AddId && nodeNeighbours.Count > e.AddId) {
             nodeNeighbours[s.AddId].Add(new Tuple<Node, float>(e, length));
             nodeNeighbours[e.AddId].Add(new Tuple<Node, float>(s, length));

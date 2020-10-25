@@ -16,13 +16,16 @@ namespace Simulations
             return c.road.getCarInfront(c);
         }
 
-        private List<Edge> calculatePath(Node startingNode, Node destination)
+        public List<Edge> calculatePath(Node startingNode, Node destination)
         {
             float[] dist = new float[map.nodeCount];
             int[] prev = new int[map.nodeCount];
+            //Debug.Log(map.nodeCount);
             List<Node> allNodes = new List<Node>(map.nodes.Values.ToList());
+            //Debug.Log(allNodes.Count);
             foreach (Node n in allNodes)
             {
+                //Debug.Log(n.AddId + " " + map.nodeNeighbours[n.AddId].Count);
                 if(startingNode.AddId != n.AddId)
                 {
                     dist[n.AddId] = float.MaxValue;
@@ -37,6 +40,7 @@ namespace Simulations
             {
                 q.Add(n);
             }
+            Debug.Log(q.Count);
             while(q.Count > 0) {
                 Node u = null;
                 float min = float.MaxValue;
@@ -48,10 +52,11 @@ namespace Simulations
                         min = dist[n.AddId];
                         u = n;
                     }
+                    //Debug.Log("IN");
+                    //Debug.Log(min);
                 }
                 q.Remove(u);
                 s.Add(u);
-
                 foreach (Tuple<Node, float> t in map.nodeNeighbours[u.AddId])
                 {
                     if(dist[u.AddId] + t.Item2 < dist[t.Item1.AddId]){
@@ -76,7 +81,7 @@ namespace Simulations
             return path;
         }
 
-        public abstract void Init(List<Car> cars, TrafficLight tf);
-        public abstract void Step(int frames);
+        public abstract void Init(List<Car> cars, Map map, TrafficLight tf);
+        public abstract void Step(float deltaTime);
     }
 }

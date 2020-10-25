@@ -39,8 +39,8 @@ namespace Simulations {
             {
                 return;
             }
-            position += (velocity / 7);
-            //Debug.Log(velocity);
+            position += (velocity / 10);
+            //Debug.Log(position);
             if(position > road.length) {
                 changeRoad(newEdge);
             }
@@ -53,6 +53,7 @@ namespace Simulations {
                 position -= road.length;
                 road.RemoveCar(this);
                 Debug.Log("RemovCar");
+                Debug.Log(path.Count);
             }
             if(newRoad != null) {
                 path.RemoveAt(path.Count - 1);

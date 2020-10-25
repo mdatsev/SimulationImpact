@@ -156,6 +156,9 @@ MonoBehaviour:
   useDummySim: 0
   startingPoints: []
   street: {fileID: 4353896233903582591, guid: 0e46df81bf5416c47bb7c2edbcc5fd8c, type: 3}
+  streetTiles:
+  - {fileID: 6520295407827639819, guid: 2528e81461a60e6a9a4fd6fe0470f0b9, type: 3}
+  - {fileID: 596822489078286856, guid: 0e46df81bf5416c47bb7c2edbcc5fd8c, type: 3}
   building: {fileID: 0}
   sidewalk: {fileID: 1442747450203514, guid: a9da80f587bbf9046aefc4a4cfb8a7fc, type: 3}
   traficL: {fileID: 1221989198454966, guid: 8f845198ed09c3c4bac1cbc4fce5e435, type: 3}

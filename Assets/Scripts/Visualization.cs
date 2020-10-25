@@ -41,8 +41,8 @@ public class Visualization : MonoBehaviour
         buildings.transform.parent = streetWire.transform;
 
         reader();
-        /*
-        Node test1 = new Node(new Vector3(0, 0, 0), false);
+        
+/*        Node test1 = new Node(new Vector3(0, 0, 0), false);
         Node test2 = new Node(new Vector3(500, 0, 1), false);
         Node test3 = new Node(new Vector3(1000, 0, 100), false);
         Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
@@ -53,8 +53,8 @@ public class Visualization : MonoBehaviour
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
         map.addEdge(edgee2);
-        map.addEdge(edgee2);
-        */
+        map.addEdge(edgee2);*/
+        
 
         List<Edge> edg = map.edges;
 
@@ -69,7 +69,7 @@ public class Visualization : MonoBehaviour
         System.Random rand = new System.Random();
 
         GameObject[] buildingListArray = Resources.LoadAll<GameObject>("Prefabs/Buildings");
-        List<GameObject> buildingList = buildingListArray.ToList();
+        List<GameObject> buildingList = buildingListArray.ToList(); 
 
         foreach (Edge e in edg)
         {
@@ -130,34 +130,33 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
-        /*startingPoints.Add(new Vector2(0,0));
-        /*
         double startingLength = 0;
-        double incrase = 15;
-        for(int i = 0; i < 5; i++)
+        double incrase = 10;
+        for (int i = 0; i < 0; i++)
         {
             startingPoints.Add(startingLength);
             startingLength += incrase;
         }
-        startingPoints.Add(startingLength + 50);
+        startingPoints.Add(0);
         //startingPoints.Add(new Vector2(1,1));
 
-        TrafficLight tf = new TrafficLight(edgee);
+        TrafficLight tf = new TrafficLight(edg[45]);
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
-        foreach (double p in startingPoints) {
+        sim.Init(cars, map, tf);
+        List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
+        foreach (double p in startingPoints)
+        {
             Car c = new Car();
             c.position = p;
-            c.velocity = (double)UnityEngine.Random.Range(2.0F, 3.0F);
-            c.path.Add(edgee2);
-            c.path.Add(edgee);
-            c.changeRoad(edgee);
+            //c.velocity = (double)UnityEngine.Random.Range(2.0F, 3.0F);
+            c.path = path;
+            c.changeRoad(c.path[c.path.Count - 1]);
             gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c.WorldCoords(), Quaternion.identity));
-            cars.Add(c);    
+            cars.Add(c);
         }
-        */
-        sim.Init(cars, null);
+
     }
 
     void reader()
@@ -174,7 +173,7 @@ public class Visualization : MonoBehaviour
 
         //Dictionary<string, Dictionary<string, Dictionary<string, string>> wayMap = new Dictionary<string, Dictionary<string, Dictionary<string, string>>();
         List<List<Dictionary<string, Dictionary<string, string>>>> list = new List<List<Dictionary<string, Dictionary<string, string>>>>();
-        XmlReader reader = XmlReader.Create("./geo-milev.osm", settings);
+        XmlReader reader = XmlReader.Create("./geo-milev-2.osm", settings);
         
         reader.ReadToFollowing("node");
         string id = "";
@@ -210,10 +209,11 @@ public class Visualization : MonoBehaviour
         bool tagLast = false;
 
         List<string> currentNodes = new List<string>();
+        Dictionary<string, Node> uniqueNodes = new Dictionary<string, Node>();
         //List<Edge> currentEdge = new List<Edge>();
 
-        float lat_start = 0;
-        float lon_start = 0;
+        float x_start = 0;
+        float y_start = 0;
         bool firstRoad = true;
         
         int forwardLanes = 1;
@@ -235,30 +235,47 @@ public class Visualization : MonoBehaviour
 
 
                         if(curPoints == 1) {
-                            float scaleLat = 111320;
-                            float lat_s = float.Parse(nodes[lastRef]["lat"]) * scaleLat;
-                            float scaleLon = 40075000 * (float)Math.Cos(lat_s * (float)Math.PI / 180f) / 360f;
-                            float lon_s = float.Parse(nodes[lastRef]["lon"]) * scaleLon;
+                            //float scaleLat = 111320
+                            const float R = 6371000;
+                            float lat_s = float.Parse(nodes[lastRef]["lat"]);
+                            float lon_s = float.Parse(nodes[lastRef]["lon"]);
+                            float rad = (float)Math.PI / 180f;
+                             
+                            float xs = R * (float)Math.Cos(lat_s * rad) * (float)Math.Cos(lon_s * rad);
+                            float ys = R * (float)Math.Cos(lat_s * rad) * (float)Math.Sin(lon_s * rad);
+
+
+                            // float scaleLon = 4007500 * (float)Math.Cos(lat_s * (float)Math.PI / 180f) / 360f;
 
                             if (firstRoad) {
-                                lat_start = lat_s;
-                                lon_start = lon_s;
+                                x_start = xs;
+                                y_start = ys;
                                 firstRoad = false;
                             } 
                             bool lights_s = nodes[lastRef]["lights"] == "true";
 
-                            float lat_e = float.Parse(nodes[newRef]["lat"]) * scaleLat;
-                            float lon_e = float.Parse(nodes[newRef]["lon"]) * scaleLon;
+                            float lat_e = float.Parse(nodes[newRef]["lat"]);
+                            float lon_e = float.Parse(nodes[newRef]["lon"]);
+
+                            float xe = R * (float)Math.Cos(lat_e * rad) * (float)Math.Cos(lon_e * rad);
+                            float ye = R * (float)Math.Cos(lat_e * rad) * (float)Math.Sin(lon_e * rad);
+                            
                             bool lights_e = nodes[newRef]["lights"] == "true";
 
-                            Node start = new Node(new Vector3((lat_s - lat_start), 0, (lon_s - lon_start)), lights_s);
+                            Node start = new Node(new Vector3((xs - x_start), 0, (ys - y_start)), lights_s);
                             start.Id = lastRef;
-                            Node end = new Node(new Vector3((lat_e - lat_start), 0, (lon_e - lon_start)), lights_e);
+                            Node end = new Node(new Vector3((xe - x_start), 0, (ye - y_start)), lights_e);
                             end.Id = newRef;
                             currentNodes.Add(lastRef);
                             currentNodes.Add(newRef);
-                            map.addNode(start);
-                            map.addNode(end);
+                            if(!uniqueNodes.ContainsKey(start.Id))
+                            {
+                                uniqueNodes.Add(start.Id, start);
+                            }
+                            if(!uniqueNodes.ContainsKey(end.Id))
+                            {
+                                uniqueNodes.Add(end.Id, end);
+                            }
                             curPoints = 0;
                             curSegment++;
                         }
@@ -289,10 +306,13 @@ public class Visualization : MonoBehaviour
                 } while (reader.Name != "way");
                 if(toAdd){
                     for(int j = 0; j < currentNodes.Count; j+=2) {
-                        Node startNode = map.nodes[currentNodes[j]];
-                        Node endNode = map.nodes[currentNodes[j+1]];
-
+                        Node startNode = uniqueNodes[currentNodes[j]];
+                        Node endNode = uniqueNodes[currentNodes[j+1]];
+                        map.addNode(startNode);
+                        map.addNode(endNode);
                         Edge edge = new Edge(startNode, endNode, forwardLanes, backwardLanes, 50, reader.GetAttribute("v") + startNode.position.x + " " + startNode.position.z +" "+ endNode.position.x + " " + endNode.position.z);
+                        //Debug.Log(edge.length);
+
                         map.addEdge(edge);
                     }
                 }
@@ -312,14 +332,14 @@ public class Visualization : MonoBehaviour
     {
         frames++;
 
-
+        
 
         for(int i = 0; i < cars.Count; i++)
         {
             gameCars[i].transform.position = cars[i].WorldCoords();
             gameCars[i].transform.rotation = cars[i].worldRotation();
         }
-        sim.Step(frames);
+        sim.Step(Time.deltaTime);
         /*cars[cars.Count - 1].velocity = 0;
         if (cars[cars.Count - 1].velocity < 0)
         {
