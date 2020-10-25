@@ -88,6 +88,7 @@ public class Visualization : MonoBehaviour
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
                 Debug.Log(street.width);
                 Vector3 decorOffset = normal * (street.width / 2 + 1);
+                Vector3 buildingOffset = normal * (street.width / 2 + 2) * 2;
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
@@ -98,7 +99,7 @@ public class Visualization : MonoBehaviour
                 if (rand.NextDouble() < buildingChance && i > 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos + normal * street.width * 2, rotation, buildings.transform);
+                        , pos + buildingOffset, rotation, buildings.transform);
                 }
 
                 Instantiate(sidewalk, pos + decorOffset, rotation, sidewalks.transform);
@@ -118,7 +119,7 @@ public class Visualization : MonoBehaviour
                 if (rand.NextDouble() < buildingChance && i < prefsNum - 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos - normal * street.width * 2, rotation, buildings.transform);
+                        , pos - buildingOffset, rotation, buildings.transform);
                 }
             }
         }
