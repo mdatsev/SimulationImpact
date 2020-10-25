@@ -39,12 +39,8 @@ public class Visualization : MonoBehaviour
         buildings.transform.parent = streetWire.transform;
 
         reader();
-<<<<<<< HEAD
-        /*Node test1 = new Node(new Vector3(0, 0, 0), false);
-=======
         /*
         Node test1 = new Node(new Vector3(0, 0, 0), false);
->>>>>>> 0b7304bd726dcdb8b98409943e78807df4d52e4d
         Node test2 = new Node(new Vector3(20, 0, 1), false);
         Node test3 = new Node(new Vector3(22, 0, 10), false);
         Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
@@ -54,12 +50,9 @@ public class Visualization : MonoBehaviour
         map.addNode(test3);
         //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
         map.addEdge(edgee);
-<<<<<<< HEAD
-        map.addEdge(edgee2);*/
-=======
+        map.addEdge(edgee2);
         map.addEdge(edgee2);
         */
->>>>>>> 0b7304bd726dcdb8b98409943e78807df4d52e4d
         List<Edge> edg = map.edges;
 
         //Node n1 = new Node(new Vector3(5, 0, 0), true);
@@ -78,7 +71,10 @@ public class Visualization : MonoBehaviour
         foreach (Edge e in edg)
         {
             int prefsNum = (int)Math.Ceiling(e.length / 4);
-
+            bool complicatedEnd = false;
+            bool complicatedStart = false;
+            if (map.nodeNeighbours[e.endNode.AddId].Count > 2) { complicatedEnd = true; }
+            if (map.nodeNeighbours[e.startNode.AddId].Count > 2) { complicatedStart = true;  }
             for (int i=0; i <= prefsNum; i++)
             {
                 float x = e.startNode.position.x + (e.direction.x)*((float)i / prefsNum);
@@ -89,7 +85,7 @@ public class Visualization : MonoBehaviour
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
-                if(e.startNode.traficLight && i ==0) {
+                if(e.startNode.traficLight && i == 0) {
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
                 if (e.endNode.traficLight && i == prefsNum)
@@ -97,12 +93,7 @@ public class Visualization : MonoBehaviour
                     Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
                 }
 
-                if (map.nodeNeighbours[e.endNode.AddId].Count <= 2 && i == prefsNum)
-                {
-
-                }
-
-                if (rand.NextDouble() < buildingChance && i > 10)
+                if (rand.NextDouble() < buildingChance && i > 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos + normal * 8, rotation, buildings.transform);
@@ -122,7 +113,7 @@ public class Visualization : MonoBehaviour
                         , pos - normal * 3, rotation, decorations.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
+                if (rand.NextDouble() < buildingChance && i < prefsNum - 3)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos - normal * 8, rotation, buildings.transform);
@@ -135,13 +126,10 @@ public class Visualization : MonoBehaviour
         } else {
             sim = new SimulationImpact();
         }
-<<<<<<< HEAD
 
         /*startingPoints.Add(new Vector2(0,0));
-=======
         /*
         startingPoints.Add(new Vector2(0,0));
->>>>>>> 0b7304bd726dcdb8b98409943e78807df4d52e4d
         //startingPoints.Add(new Vector2(1,1));
 
         GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
