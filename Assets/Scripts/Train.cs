@@ -71,7 +71,8 @@ public class Train : MonoBehaviour
                     bytes = new byte[1024];
                     int bytesRec = handler.Receive(bytes);
                     Debug.Log(Encoding.ASCII.GetString(bytes, 0, bytesRec));
-                    // handler.Send(bytes);
+                    handler.Send(Encoding.ASCII.GetBytes("1\n1,2\n3,4"));
+                    break;
                     if (bytesRec <= 0)
                     {
                         keepReading = false;
