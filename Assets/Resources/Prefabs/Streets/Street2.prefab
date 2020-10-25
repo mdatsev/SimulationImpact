@@ -15,6 +15,19 @@ MonoBehaviour:
   width: 4
   length: 8
   lanes: 2
+--- !u!65 &8731549491747218416
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353896233903582591}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.11, y: 0.22, z: 3.26}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4353207062383272397
 PrefabInstance:
   m_ObjectHideFlags: 0

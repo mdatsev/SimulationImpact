@@ -52,8 +52,8 @@ namespace Simulations {
             if (road != null && newRoad != null) {
                 position -= road.length;
                 road.RemoveCar(this);
-                Debug.Log("RemovCar");
-                Debug.Log(path.Count);
+                // Debug.Log("RemovCar");
+                // Debug.Log(path.Count);
             }
             if(newRoad != null) {
                 path.RemoveAt(path.Count - 1);

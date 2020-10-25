@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6316125462355876803}
   - component: {fileID: 6520295407827639819}
+  - component: {fileID: -499304215286184803}
   m_Layer: 0
   m_Name: Street1
   m_TagString: Untagged
@@ -25,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091141527358790200}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.16645032, y: 1.0502278, z: -0.848749}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 1, z: 2}
   m_Children:
   - {fileID: 357016939812338141}
@@ -47,6 +48,19 @@ MonoBehaviour:
   width: 4
   length: 8
   lanes: 1
+--- !u!65 &-499304215286184803
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091141527358790200}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.06, y: 0.15, z: 1.98}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7462955106081344752
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,7 +88,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7462955106081344752}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.19, z: 0}
   m_LocalScale: {x: 0.4, y: 1, z: 0.2}
   m_Children: []
   m_Father: {fileID: 6316125462355876803}
