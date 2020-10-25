@@ -12,8 +12,8 @@ namespace Simulations
         public TrafficLight tf;
         public Map map;
 
-        public Car getCarInfront(Car c) {
-            return c.road.getCarInfront(c);
+        public Car getCarInfront(Car c, int direction) {
+            return c.road.getCarInfront(c, direction);
         }
 
         public List<Edge> calculatePath(Node startingNode, Node destination)

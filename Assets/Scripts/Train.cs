@@ -6,11 +6,12 @@ using System.Net;
 using System.Text;
 using System;
 using UnityEngine;
-
+namespace Simulations {
 public class Train : MonoBehaviour
 {
     System.Threading.Thread SocketThread;
     volatile bool keepReading = false;
+    private Simulation sim;
     
     void Start()
     {
@@ -117,4 +118,5 @@ public class Train : MonoBehaviour
     {
         stopServer();
     }
+}
 }
