@@ -11,7 +11,7 @@ public class Visualization : MonoBehaviour
     public GameObject SimulationManager;
     public bool useDummySim;
     public List<Vector2> startingPoints = new List<Vector2>();
-    public GameObject street;
+    public List<StreetTile> streetTiles;
     public GameObject building;
     public GameObject sidewalk;
     public GameObject traficL;
@@ -69,7 +69,11 @@ public class Visualization : MonoBehaviour
 
         foreach (Edge e in edg)
         {
-            int prefsNum = (int)Math.Ceiling(e.length / 4);
+            e.forwardLanes = 0;
+            e.backwardLanes = 1;
+            StreetTile street = streetTiles[e.forwardLanes + e.backwardLanes - 1];
+            int prefsNum = (int)Math.Ceiling(e.length / street.length);
+
 
             for (int i=0; i <= prefsNum; i++)
             {
@@ -78,11 +82,13 @@ public class Visualization : MonoBehaviour
                 Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
                 Vector3 pos = new Vector3(x, 0, z);
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
+                Debug.Log(street.width);
+                Vector3 decorOffset = normal * (street.width / 2 + 1);
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
                 if(e.startNode.traficLight && (i == 0 || i == prefsNum)) {
-                    Instantiate(traficL, pos + normal * 3, rotation, traficLights.transform);
+                    Instantiate(traficL, pos + decorOffset, rotation, traficLights.transform);
                 }
                 if (map.nodeNeighbours[e.endNode.AddId].Count <= 2 && i == prefsNum)
                 {
@@ -92,27 +98,27 @@ public class Visualization : MonoBehaviour
                 if (rand.NextDouble() < buildingChance && i > 10)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos + normal * 8, rotation, buildings.transform);
+                        , pos + normal * street.width * 2, rotation, buildings.transform);
                 }
 
-                Instantiate(sidewalk, pos + normal * 3, rotation, sidewalks.transform);
+                Instantiate(sidewalk, pos + decorOffset, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos + normal * 3, rotation, decorations.transform);
+                        , pos + decorOffset, rotation, decorations.transform);
                 }
 
                 rotation *= Quaternion.Euler(0, 180, 0);
     //right side
-                Instantiate(sidewalk, pos - normal * 3, rotation, sidewalks.transform);
+                Instantiate(sidewalk, pos - decorOffset, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
-                        , pos - normal * 3, rotation, decorations.transform);
+                        , pos - decorOffset, rotation, decorations.transform);
                 }
                 
                 if (rand.NextDouble() < buildingChance && i < prefsNum + 10)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos - normal * 8, rotation, buildings.transform);
+                        , pos - normal * street.width * 2, rotation, buildings.transform);
                 }
             }
         }
@@ -192,7 +198,7 @@ public class Visualization : MonoBehaviour
 
         List<string> currentNodes = new List<string>();
         //List<Edge> currentEdge = new List<Edge>();
-        Debug.Log("DEEDE");
+
         float lat_start = 0;
         float lon_start = 0;
         bool firstRoad = true;
