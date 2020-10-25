@@ -1,47 +1,66 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Simulations {
-    public class Car : MonoBehaviour
+    public class Car
     {
         public double velocity = 1;
         public double position = 0;
         public int lane = 0;
         public Edge road;
-        private List<Edge> path = new List<Edge>();
+        public List<Edge> path = new List<Edge>();
 
-        // Start is called before the first frame update
-        void Start()
+        public Vector3 WorldCoords()
         {
-            
+            double n = (position) / road.length;
+            return road.startNode.position + (road.endNode.position - road.startNode.position) * (float)n;
         }
 
-        // Update is called once per frame
-        void Update()
+        public Quaternion worldRotation()
         {
-            
+            return Quaternion.AngleAxis((float)Math.Atan2((road.direction.x), (road.direction.z)) * (180F / (float)Math.PI), Vector3.up);
+        }
+
+        public Edge getNextRoad()
+        {
+            Edge res = null;
+            if (path.Count > 0)
+            {
+                res = path[path.Count - 1];
+            }
+            return res;
         }
 
         public void Move() {
-            Edge newEdge = null;
-            if(path.Count > 0)
+            Edge newEdge = getNextRoad();
+            if(newEdge == null && position + velocity > road.length)
             {
-                newEdge = path[path.Count - 1];
+                return;
             }
-            position += velocity;
+            position += (velocity / 7);
+            //Debug.Log(velocity);
             if(position > road.length) {
                 changeRoad(newEdge);
             }
-            double n = (position) / road.length;
-            transform.position = (road.endNode.position - road.startNode.position) * (float)n;
-
+            //Debug.Log(n);
+            //transform.position = WorldCoords();
+            //Debug.Log(transform.position);
         }
         public void changeRoad(Edge newRoad) {
-            if (road != null) {
-                position = position - road.length;
+            if (road != null && newRoad != null) {
+                position -= road.length;
+                road.RemoveCar(this);
+                Debug.Log("RemovCar");
             }
-            this.road = newRoad;
+            if(newRoad != null) {
+                path.RemoveAt(path.Count - 1);
+                //Debug.Log(path.Count);
+                road = newRoad;
+                road.AddCar(this);
+                //Debug.Log(newRoad.length);
+            }
         }
     }
 }
