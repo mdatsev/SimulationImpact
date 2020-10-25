@@ -8,6 +8,7 @@ namespace Simulations {
     {
         public double velocity = 1;
         public double position = 0;
+        public int direction = 1;
         public int lane = 0;
         public Edge road;
         public List<Edge> path = new List<Edge>();
@@ -15,12 +16,21 @@ namespace Simulations {
         public Vector3 WorldCoords()
         {
             double n = (position) / road.length;
-            return road.startNode.position + (road.endNode.position - road.startNode.position) * (float)n;
+            if (direction == -1)
+            {
+                n = 1 - n;
+            }
+            var perpendicular = new Vector3(-road.direction.z, 0, road.direction.x);
+            var offset = - direction * perpendicular.normalized * 1.1f;
+
+            Debug.Log(String.Format("{0} {1} {2}", road.direction, perpendicular, offset));
+            return road.startNode.position + (road.endNode.position - road.startNode.position) * (float)n + offset;
         }
 
         public Quaternion worldRotation()
         {
-            return Quaternion.AngleAxis((float)Math.Atan2((road.direction.x), (road.direction.z)) * (180F / (float)Math.PI), Vector3.up);
+            float angleOffset = direction == 1 ? 0 : 180;
+            return Quaternion.AngleAxis((float)Math.Atan2((road.direction.x), (road.direction.z)) * (180F / (float)Math.PI) + angleOffset, Vector3.up); // za pesho
         }
 
         public Edge getNextRoad()
@@ -50,16 +60,22 @@ namespace Simulations {
         }
         public void changeRoad(Edge newRoad) {
             if (road != null && newRoad != null) {
+                var realEnd = direction == 1 ? road.endNode : road.startNode;
                 position -= road.length;
-                road.RemoveCar(this);
-                // Debug.Log("RemovCar");
-                // Debug.Log(path.Count);
+                road.RemoveCar(this, direction);
+                Debug.Log("RemovCar");
+                Debug.Log(path.Count);
+                if (realEnd == newRoad.startNode) {
+                    direction = 1;
+                } else { // realEnd == newRoad.endNode
+                    direction = -1;
+                }
             }
             if(newRoad != null) {
                 path.RemoveAt(path.Count - 1);
                 //Debug.Log(path.Count);
                 road = newRoad;
-                road.AddCar(this);
+                road.AddCar(this, direction);
                 //Debug.Log(newRoad.length);
             }
         }

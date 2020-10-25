@@ -12,8 +12,33 @@ namespace Simulations
         public TrafficLight tf;
         public Map map;
 
-        public Car getCarInfront(Car c) {
-            return c.road.getCarInfront(c);
+        public Car getCarInfront(Car c, int direction) {
+            return c.road.getCarInfront(c, direction);
+        }
+
+        public List<List<int, float>> getPoints(float x, float z) {
+            int rows = 60;
+            int columns = 60;
+            List<List<int, float>> points = new List<List<int, float>>();
+
+            for(int row = 0; row < rows; row++) {
+                for(int column = 0; column < columns; column++) {
+                    foreach (Car c in cars) {
+                        Vector3 vec = c.WorldCoords();
+
+                        if(vec.x > (row + x) && vec.x < (row  + x + 1) && (vec.z + z) > column && (vec.z + z + 1) < column) {
+                            points[row][column][0] = 1;
+                            points[row][column][1] = c.velocity;
+                        } else {
+                            points[row][column][0] = 0;
+                            points[row][column][1] = 0;
+                        }
+
+                    }
+                }
+            }
+
+            return points;
         }
 
         public List<Edge> calculatePath(Node startingNode, Node destination)

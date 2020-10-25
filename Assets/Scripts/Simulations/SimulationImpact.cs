@@ -11,7 +11,7 @@ namespace Simulations
         const double reactionTime = 1.1; // reaction time / timestep
         const double S0 = 3; // min gap
         const double a = 1.5; // acceleration
-        const double V0 = 1; // desired speed
+        const double V0 = 4; // desired speed
 
         private float deltaTime; 
 
@@ -25,7 +25,7 @@ namespace Simulations
             this.deltaTime = deltaTime;
             //Debug.Log(this.deltaTime);
             foreach(Car c in this.cars) {
-                Car LV = getCarInfront(c); // leading vehicle
+                Car LV = getCarInfront(c, c.direction); // leading vehicle
                 if (LV == null && c.road.IsRedTrafficLight)
                 {
                    // Debug.Log(c.road.length);
@@ -44,7 +44,7 @@ namespace Simulations
                         Edge nextRoad = c.getNextRoad();
                         if (nextRoad != null)
                         {
-                            LV = nextRoad.getLastCar();
+                            LV = nextRoad.getLastCar(c.direction);
                             if (LV != null)
                             {
                                 c.velocity = newVelocity(c.velocity, true, LV.position + c.road.length - c.position, LV.velocity);
@@ -64,7 +64,7 @@ namespace Simulations
                 }
                 c.Move();
             }
-            tf.update(this.deltaTime);
+            tf?.update(this.deltaTime);
         }
 
 
