@@ -40,20 +40,75 @@ public class Visualization : MonoBehaviour
         traficLights.transform.parent = streetWire.transform;
         buildings.transform.parent = streetWire.transform;
 
-        reader();
-        
-/*        Node test1 = new Node(new Vector3(0, 0, 0), false);
-        Node test2 = new Node(new Vector3(500, 0, 1), false);
-        Node test3 = new Node(new Vector3(1000, 0, 100), false);
-        Edge edgee = new Edge(test1, test2, 1, 1, 1, "");
-        Edge edgee2 = new Edge(test2, test3, 1, 1, 1, "");    
+        // reader();
+        Map map = new Map();
+
+        GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
+        List<GameObject> carList = carListArray.ToList();
+
+
+        Node test1 = new Node(new Vector3(0, 0, 0), false);
+        Node test2 = new Node(new Vector3(100, 0, 0), false);
+        Node test3 = new Node(new Vector3(0, 0, 100), false);
+        Node test4 = new Node(new Vector3(-100, 0, 0), false);
+        Node test5 = new Node(new Vector3(0, 0, -100), false);
+
+        Edge edgeE = new Edge(test2, test1, 1, 1, 1, "");
+        Edge edgeN = new Edge(test3, test1, 1, 1, 1, "");
+        Edge edgeW = new Edge(test4, test1, 1, 1, 1, "");
+        Edge edgeS = new Edge(test5, test1, 1, 1, 1, "");
+
         map.addNode(test1);
         map.addNode(test2);
         map.addNode(test3);
-        //Edge edge = new Edge(currentNodes[j], currentNodes[j + 1], 1, 1, 50, reader.GetAttribute("v") + currentNodes[j].position.x + " " + currentNodes[j].position.z + " " + currentNodes[j + 1].position.x + " " + currentNodes[j + 1].position.z);
-        map.addEdge(edgee);
-        map.addEdge(edgee2);
-        map.addEdge(edgee2);*/
+        map.addNode(test4);
+        map.addNode(test5);
+        
+        map.addEdge(edgeE);
+        map.addEdge(edgeN);
+        map.addEdge(edgeW);
+        map.addEdge(edgeS);
+        
+            List<Edge> path = new List<Edge>();
+        Car c1 = new Car();
+        path.Add(edgeW);
+        //path.Add(edgeS);
+        c1.path = path;
+        c1.position = 0;
+        c1.changeRoad(edgeW);
+        gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c1.WorldCoords(), Quaternion.identity));
+
+        Car c2 = new Car();
+        path = new List<Edge>();
+        path.Add(edgeS);
+        //path.Add(edgeW);
+        c2.path = path;
+        c2.position = 0;
+        c2.changeRoad(edgeS);
+        gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c2.WorldCoords(), Quaternion.identity));
+
+        Car c3 = new Car();
+        path = new List<Edge>();
+        path.Add(edgeE);
+        //path.Add(edgeW);
+        c3.path = path;
+        c3.position = 0;
+        c3.changeRoad(edgeE);
+        gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c3.WorldCoords(), Quaternion.identity));
+
+        Car c4 = new Car();
+        path = new List<Edge>();
+        path.Add(edgeW);
+        //path.Add(edgeE);
+        c4.path = path;
+        c4.position = 0;
+        c4.changeRoad(edgeW);
+        gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c4.WorldCoords(), Quaternion.identity));
+    
+        //cars.Add(c1);
+        cars.Add(c2);
+        cars.Add(c3);
+        cars.Add(c4);
         
 
         List<Edge> edg = map.edges;
@@ -73,6 +128,7 @@ public class Visualization : MonoBehaviour
 
         foreach (Edge e in edg)
         {
+            Debug.Log("asd");
             StreetTile street = streetTiles[Math.Min(e.forwardLanes + e.backwardLanes - 1, 1)];
             int prefsNum = (int)Math.Ceiling(e.length / street.length);
             bool complicatedEnd = false;
@@ -130,6 +186,12 @@ public class Visualization : MonoBehaviour
             sim = new SimulationImpact();
         }
 
+        sim.Init(cars, map, new TrafficLight(edgeS));
+
+
+
+/*
+
         double startingLength = 0;
         double incrase = 10;
         for (int i = 0; i < 0; i++)
@@ -142,10 +204,9 @@ public class Visualization : MonoBehaviour
 
         TrafficLight tf = new TrafficLight(edg[45]);
 
-        GameObject[] carListArray = Resources.LoadAll<GameObject>("Prefabs/Cars");
         List<GameObject> carList = carListArray.ToList();
         sim.Init(cars, map, tf);
-        List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
+        List<Edge> path = sim.calculatePath(edg[32].startNode, edg[4].endNode);
         foreach (double p in startingPoints)
         {
             Car c = new Car();
@@ -157,6 +218,8 @@ public class Visualization : MonoBehaviour
             cars.Add(c);
         }
 
+
+*/
     }
 
     void reader()
