@@ -2,16 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Simulations
 {
     public abstract class Simulation
     {
         public List<Car> cars;
+        public TrafficLight tf;
         public Map map;
 
         public Car getCarInfront(Car c) {
-            return null;
+            return c.road.getCarInfront(c);
         }
 
         private List<Edge> calculatePath(Node startingNode, Node destination)
@@ -74,7 +76,7 @@ namespace Simulations
             return path;
         }
 
-        public abstract void Init(List<Car> cars);
-        public abstract void Step();
+        public abstract void Init(List<Car> cars, TrafficLight tf);
+        public abstract void Step(int frames);
     }
 }

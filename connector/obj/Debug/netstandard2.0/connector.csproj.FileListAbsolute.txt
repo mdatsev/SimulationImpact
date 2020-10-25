@@ -1,0 +1,9 @@
+/home/vladislav/SimulationImpact/connector/bin/Debug/netstandard2.0/connector.deps.json
+/home/vladislav/SimulationImpact/connector/bin/Debug/netstandard2.0/connector.dll
+/home/vladislav/SimulationImpact/connector/bin/Debug/netstandard2.0/connector.pdb
+/home/vladislav/SimulationImpact/connector/obj/Debug/netstandard2.0/connector.csprojAssemblyReference.cache
+/home/vladislav/SimulationImpact/connector/obj/Debug/netstandard2.0/connector.AssemblyInfoInputs.cache
+/home/vladislav/SimulationImpact/connector/obj/Debug/netstandard2.0/connector.AssemblyInfo.cs
+/home/vladislav/SimulationImpact/connector/obj/Debug/netstandard2.0/connector.csproj.CoreCompileInputs.cache
+/home/vladislav/SimulationImpact/connector/obj/Debug/netstandard2.0/connector.dll
+/home/vladislav/SimulationImpact/connector/obj/Debug/netstandard2.0/connector.pdb
