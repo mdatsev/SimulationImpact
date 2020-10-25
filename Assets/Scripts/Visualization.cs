@@ -126,17 +126,15 @@ public class Visualization : MonoBehaviour
         GameObject[] buildingListArray = Resources.LoadAll<GameObject>("Prefabs/Buildings");
         List<GameObject> buildingList = buildingListArray.ToList(); 
 
+        RaycastHit hit;
+
         foreach (Edge e in edg)
         {
             Debug.Log("asd");
             StreetTile street = streetTiles[Math.Min(e.forwardLanes + e.backwardLanes - 1, 1)];
             int prefsNum = (int)Math.Ceiling(e.length / street.length);
-            bool complicatedEnd = false;
-            bool complicatedStart = false;
-            if (map.nodeNeighbours[e.endNode.AddId].Count > 2) { complicatedEnd = true; }
-            if (map.nodeNeighbours[e.startNode.AddId].Count > 2) { complicatedStart = true;  }
 
-            for (int i=0; i <= prefsNum; i++)
+            for (int i = 0; i <= prefsNum; i++)
             {
                 float x = e.startNode.position.x + (e.direction.x)*((float)i / prefsNum);
                 float z = e.startNode.position.z + (e.direction.z)*((float)i / prefsNum);
@@ -152,16 +150,19 @@ public class Visualization : MonoBehaviour
                     Instantiate(traficL, pos + decorOffset, rotation, traficLights.transform);
                 }
 
-                if (rand.NextDouble() < buildingChance && i > 3)
-                {
-                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
-                        , pos + buildingOffset, rotation, buildings.transform);
-                }
-
                 Instantiate(sidewalk, pos + decorOffset, rotation, sidewalks.transform);
                 if (rand.NextDouble() < decorationChance) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
                         , pos + decorOffset, rotation, decorations.transform);
+                }
+
+                bool hitted = Physics.Linecast(pos + buildingOffset, pos + buildingOffset - Vector3.up, out hit);
+                if (hitted) Debug.Log( hit.collider.gameObject.name);
+
+                if (rand.NextDouble() < buildingChance && !hitted)
+                {
+                    Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+                        , pos + buildingOffset, rotation, buildings.transform);
                 }
 
                 rotation *= Quaternion.Euler(0, 180, 0);
@@ -172,7 +173,7 @@ public class Visualization : MonoBehaviour
                         , pos - decorOffset, rotation, decorations.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && i < prefsNum - 3)
+                if (rand.NextDouble() < buildingChance && !hitted)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos - buildingOffset, rotation, buildings.transform);
@@ -194,12 +195,10 @@ public class Visualization : MonoBehaviour
 
         double startingLength = 0;
         double incrase = 10;
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 2; i++)
         {
-            startingPoints.Add(startingLength);
-            startingLength += incrase;
+            startingPoints.Add(0);
         }
-        startingPoints.Add(0);
         //startingPoints.Add(new Vector2(1,1));
 
         TrafficLight tf = new TrafficLight(edg[45]);
@@ -209,14 +208,24 @@ public class Visualization : MonoBehaviour
         List<Edge> path = sim.calculatePath(edg[32].startNode, edg[4].endNode);
         foreach (double p in startingPoints)
         {
+        List<Edge> path = sim.calculatePath(edg[32].startNode, edg[47].endNode);
+        List<Edge> path2 = sim.calculatePath(edg[47].startNode, edg[32].endNode);
+       
             Car c = new Car();
-            c.position = p;
+            c.position = 0;
             //c.velocity = (double)UnityEngine.Random.Range(2.0F, 3.0F);
             c.path = path;
             c.changeRoad(c.path[c.path.Count - 1]);
             gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c.WorldCoords(), Quaternion.identity));
-            cars.Add(c);
-        }
+            // cars.Add(c);
+             Car c1 = new Car();
+            c1.position = 0;
+            //c.velocity = (double)UnityEngine.Random.Range(2.0F, 3.0F);
+            c1.path = path2;
+            c1.changeRoad(c1.path[c1.path.Count - 1]);
+            gameCars.Add(Instantiate(carList[UnityEngine.Random.Range(0, carList.Count)], c.WorldCoords(), Quaternion.identity));
+            cars.Add(c1);
+        
 
 
 */

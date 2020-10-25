@@ -51,7 +51,7 @@ public class AirVisualization : MonoBehaviour
         return new Color(
             (255 * val),
             (255 * (1-val)),
-            0, 0.5f
+            0, 0.1f
         );
     }
 }
