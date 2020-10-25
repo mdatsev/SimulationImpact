@@ -70,8 +70,8 @@ public class Visualization : MonoBehaviour
 
         GameObject[] buildingListArray = Resources.LoadAll<GameObject>("Prefabs/Buildings");
         List<GameObject> buildingList = buildingListArray.ToList(); 
-
-        RaycastHit hit;
+        Vector3 tl = new Vector3(0,0,0);
+        Vector3 br = new Vector3(0,0,0);
 
         foreach (Edge e in edg)
         {
@@ -84,9 +84,20 @@ public class Visualization : MonoBehaviour
                 float z = e.startNode.position.z + (e.direction.z)*((float)i / prefsNum);
                 Quaternion rotation = Quaternion.AngleAxis( -90 + (float)Math.Atan2((e.direction.x), (e.direction.z))*(180F/(float)Math.PI), Vector3.up);
                 Vector3 pos = new Vector3(x, 0, z);
+
+                if (x > tl.x) tl.x = x;
+                if (z > tl.z) tl.z = z;
+                if (x < br.x) br.x = x;
+                if (z < br.z) br.z = z;
+
                 Vector3 normal = Vector3.Cross(e.direction, new Vector3(0,1,0)).normalized;
                 Vector3 decorOffset = normal * (street.width / 2 + 1);
                 Vector3 buildingOffset = normal * (street.width / 2 + 2) * 2;
+
+                bool complicatedEnd = map.nodeNeighbours[e.endNode.AddId].Count > 2;
+                bool complicatedStart = map.nodeNeighbours[e.startNode.AddId].Count > 2;
+                bool canBuild = (!complicatedStart || i > 2) && (!complicatedEnd || i < prefsNum - 2);
+
 
                 Instantiate(street, pos, rotation, streets.transform);
                 
@@ -95,15 +106,12 @@ public class Visualization : MonoBehaviour
                 }
 
                 Instantiate(sidewalk, pos + decorOffset, rotation, sidewalks.transform);
-                if (rand.NextDouble() < decorationChance) {
+                if (rand.NextDouble() < decorationChance && canBuild) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
                         , pos + decorOffset, rotation, decorations.transform);
                 }
 
-                bool hitted = Physics.Linecast(pos + buildingOffset, pos + buildingOffset - Vector3.up, out hit);
-                if (hitted) Debug.Log( hit.collider.gameObject.name);
-
-                if (rand.NextDouble() < buildingChance && !hitted)
+                if (rand.NextDouble() < buildingChance && canBuild)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos + buildingOffset, rotation, buildings.transform);
@@ -112,12 +120,12 @@ public class Visualization : MonoBehaviour
                 rotation *= Quaternion.Euler(0, 180, 0);
     //right side
                 Instantiate(sidewalk, pos - decorOffset, rotation, sidewalks.transform);
-                if (rand.NextDouble() < decorationChance) {
+                if (rand.NextDouble() < decorationChance && canBuild) {
                     Instantiate(decorationList[UnityEngine.Random.Range(0, decorationList.Count)]
                         , pos - decorOffset, rotation, decorations.transform);
                 }
                 
-                if (rand.NextDouble() < buildingChance && !hitted)
+                if (rand.NextDouble() < buildingChance && canBuild)
                 {
                     Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
                         , pos - buildingOffset, rotation, buildings.transform);
@@ -125,6 +133,16 @@ public class Visualization : MonoBehaviour
             }
         }
     
+        // int n = 40;
+        // for (int x = (int)Math.Floor(br.x); x < (int)Math.Ceiling(tl.x);x += 50) {
+        //     for (int z = (int)Math.Floor(br.z); z < (int)Math.Ceiling(tl.z);z += 50) {
+        //         GameObject b = Instantiate(buildingList[UnityEngine.Random.Range(0, buildingList.Count)]
+        //                 ,new Vector3(x, 0, z), Quaternion.identity, buildings.transform);
+
+        //         b.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+        //     }
+        // }
+
         if (useDummySim) {
             sim = new SimulationDummy();
         } else {
